@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LinkCoreModule } from './link/core/entities/link-core.module';
+import { LinkCoreModule } from './link/core/link-core.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 require('dotenv').config();

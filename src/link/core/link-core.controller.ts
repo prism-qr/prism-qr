@@ -8,7 +8,7 @@ import {
   Redirect,
 } from '@nestjs/common';
 import { LinkReadService } from 'src/link/read/link-read.service';
-import { ILink } from './link.interface';
+import { ILink } from './entities/link.interface';
 import { CreateLinkDto } from 'src/link/write/dto/create-link.dto';
 import { LinkWriteService } from 'src/link/write/link-write.service';
 import { UpdateLinkDto } from 'src/link/write/dto/update-link.dto';
