@@ -41,12 +41,11 @@ export class LinkCoreController {
 
   @Post('links')
   async createLink(@Body() dto: CreateLinkDto): Promise<ILink> {
-    console.log(dto);
     return await this.linkWriteService.createLink(dto);
   }
 
-  @Put('links/:name')
-  async updateLink(@Body() dto: UpdateLinkDto): Promise<void> {
-    await this.linkWriteService.updateDestination(dto.id, dto.destination);
+  @Put('links')
+  async updateLink(@Body() dto: UpdateLinkDto): Promise<ILink> {
+    return await this.linkWriteService.updateLink(dto);
   }
 }

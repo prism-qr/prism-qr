@@ -1,9 +1,14 @@
-import { Model, Types } from 'mongoose';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Model, Types, UpdateQuery } from 'mongoose';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { LinkEntity } from '../core/entities/link.entity';
 import { ILink } from '../core/entities/link.interface';
 import { CreateLinkDto } from './dto/create-link.dto';
+import { UpdateLinkDto } from './dto/update-link.dto';
 
 @Injectable()
 export class LinkWriteService {
@@ -17,7 +22,7 @@ export class LinkWriteService {
         name: dto.name,
         destination: dto.destination,
       });
-      return LinkEntity.mapToInterface(link);
+      return LinkEntity.mapToInterface(link.toObject());
     } catch (err) {
       if (err.code === 11000) {
         throw new ConflictException('Link name already exists');
@@ -27,12 +32,27 @@ export class LinkWriteService {
     }
   }
 
-  async updateDestination(id: string, destination: string): Promise<void> {
-    await this.linkModel.updateOne(
-      {
-        _id: new Types.ObjectId(id),
-      },
-      { destination },
+  async updateLink(dto: UpdateLinkDto): Promise<ILink> {
+    const updateQuery = this.constructUpdateQuery(dto);
+
+    const updatedLink = await this.linkModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(dto.id) },
+      updateQuery,
+      { new: true },
     );
+    if (!updatedLink) {
+      throw new NotFoundException('Link not found');
+    }
+    return LinkEntity.mapToInterface(updatedLink.toObject());
+  }
+
+  private constructUpdateQuery(dto: UpdateLinkDto): UpdateQuery<LinkEntity> {
+    const updateQuery: UpdateQuery<LinkEntity> = {};
+
+    if (dto.destination) {
+      updateQuery.destination = dto.destination;
+    }
+
+    return updateQuery;
   }
 }
