@@ -13,6 +13,7 @@ import { CreateLinkDto } from 'src/link/write/dto/create-link.dto';
 import { LinkWriteService } from 'src/link/write/link-write.service';
 import { UpdateLinkDto } from 'src/link/write/dto/update-link.dto';
 import { LinkCoreService } from './link-core.service';
+import { Public } from 'src/auth/core/decorators/is-public';
 
 @Controller('')
 export class LinkCoreController {
@@ -22,6 +23,7 @@ export class LinkCoreController {
     private readonly linkCoreService: LinkCoreService,
   ) {}
 
+  @Public()
   @Get(':name')
   @Redirect()
   async redirect(@Param('name') name: string) {

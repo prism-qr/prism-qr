@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { clear } from 'jest-date-mock';
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { LinkCoreModule } from '../../src/link/core/link-core.module';
 import {
   closeInMemoryMongoServer,
@@ -14,11 +13,7 @@ import { LinkUtils } from './link-utils';
 
 export async function createTestApp() {
   const module: TestingModule = await Test.createTestingModule({
-    imports: [
-      rootMongooseTestModule(),
-      ConfigModule.forRoot({ isGlobal: true }),
-      LinkCoreModule,
-    ],
+    imports: [rootMongooseTestModule(), LinkCoreModule],
   }).compile();
 
   const app = module.createNestApplication();

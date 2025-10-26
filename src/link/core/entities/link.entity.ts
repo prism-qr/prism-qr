@@ -6,6 +6,9 @@ import { ILink } from './link.interface';
 export class LinkEntity {
   _id: string;
 
+  @Prop()
+  userId: string;
+
   @Prop({ unique: true })
   name: string;
 

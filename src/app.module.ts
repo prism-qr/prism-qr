@@ -1,23 +1,18 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LinkCoreModule } from './link/core/link-core.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
-require('dotenv').config();
+import { UserCoreModule } from './user/core/user-core.module';
+import { getEnvConfig } from './shared/config/env-configs';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AuthCoreModule } from './auth/core/auth-core.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-      }),
-      inject: [ConfigService],
-    }),
+    MongooseModule.forRoot(getEnvConfig().mongo.uri, { dbName: 'default' }),
+    EventEmitterModule.forRoot(),
     LinkCoreModule,
+    AuthCoreModule,
+    UserCoreModule,
   ],
   controllers: [],
   providers: [],

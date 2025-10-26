@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { LinkReadService } from 'src/link/read/link-read.service';
+import { getEnvConfig } from 'src/shared/config/env-configs';
 
 @Injectable()
 export class LinkCoreService {
-  constructor(
-    private readonly linkReadService: LinkReadService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly linkReadService: LinkReadService) {}
 
   isValidUrl(url: string): boolean {
     try {
@@ -23,6 +20,6 @@ export class LinkCoreService {
     const link = await this.linkReadService.readByName(name);
     return this.isValidUrl(link.destination)
       ? link.destination
-      : this.configService.get<string>('BACKEND_URL');
+      : getEnvConfig().internal.backendUrl;
   }
 }
