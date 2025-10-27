@@ -16,9 +16,13 @@ export class LinkEntity {
   destination: string;
 
   public static mapToInterface(link: LinkEntity): ILink {
+    const { _id, userId, name, destination } = link;
+
     return {
-      ...link,
-      id: link._id.toString(),
+      id: _id.toString(),
+      userId,
+      name,
+      destination,
     };
   }
 }

@@ -17,22 +17,28 @@ export class ApiKeyReadService {
   //   return bcrypt.compare(apiKey, apiKeyHash);
   // }
 
-  public async readApiKeysByUserId(userId: string): Promise<IApiKey[]> {
+  public async readApiKeysByLinkId(linkId: string): Promise<IApiKey[]> {
     const apiKeys = await this.apiKeyModel
-      .find({ userId })
+      .find({ linkId })
       .lean<ApiKeyEntity[]>()
       .exec();
 
     return apiKeys.map((apiKey) => ApiKeyEntity.mapToInterface(apiKey));
   }
 
-  public async readApiKeyByHash(keyHash: string): Promise<IApiKey> {
+  public async readApiKeyByHash(keyHash: string): Promise<IApiKey | null> {
     const apiKey = await this.apiKeyModel
-      .find({ keyHash })
+      .findOne({ keyHash })
       .lean<ApiKeyEntity>()
       .exec();
 
+    if (!apiKey) return null;
+
     return ApiKeyEntity.mapToInterface(apiKey);
+  }
+
+  public async countByLinkId(linkId: string): Promise<number> {
+    return await this.apiKeyModel.countDocuments({ linkId }).exec();
   }
 
   // public async readUserId(apiKeyValue: string): Promise<string | null> {

@@ -16,12 +16,19 @@ export class LinkWriteService {
     @InjectModel(LinkEntity.name) private linkModel: Model<LinkEntity>,
   ) {}
 
-  async createLink(dto: CreateLinkDto): Promise<ILink> {
+  async create(dto: CreateLinkDto, userId: string): Promise<ILink> {
     try {
       const link = await this.linkModel.create({
         name: dto.name,
         destination: dto.destination,
+        userId,
       });
+
+      console.log(link);
+
+      console.log(link.toObject());
+      console.log(LinkEntity.mapToInterface(link.toObject()));
+
       return LinkEntity.mapToInterface(link.toObject());
     } catch (err) {
       if (err.code === 11000) {
@@ -32,7 +39,7 @@ export class LinkWriteService {
     }
   }
 
-  async updateLink(dto: UpdateLinkDto): Promise<ILink> {
+  async update(dto: UpdateLinkDto): Promise<ILink> {
     const updateQuery = this.constructUpdateQuery(dto);
 
     const updatedLink = await this.linkModel.findOneAndUpdate(

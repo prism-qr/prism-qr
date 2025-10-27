@@ -13,7 +13,10 @@ export class ApiKeyEntity {
   keyHash: string;
 
   @Prop()
-  userId: string;
+  active: boolean;
+
+  @Prop()
+  linkId: string;
 
   public static mapToInterface(apiKey: ApiKeyEntity): IApiKey {
     return {

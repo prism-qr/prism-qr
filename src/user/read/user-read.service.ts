@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserEntity } from '../core/entities/user.entity';
 import { IUser } from '../core/entities/user.interface';
-import { AccountClaimStatus } from '../core/enum/account-claim-status.enum';
 
 @Injectable()
 export class UserReadService {
@@ -39,22 +38,6 @@ export class UserReadService {
       .exec();
 
     return user ? UserEntity.mapToInterface(user) : null;
-  }
-
-  public async *readUnclaimedUserIdsCreatedBeforeCursor(
-    date: Date,
-  ): AsyncGenerator<string> {
-    const cursor = this.userModel
-      .find({
-        accountClaimStatus: AccountClaimStatus.Anonymous,
-        createdAt: { $lt: date },
-      })
-      .lean<UserEntity>()
-      .cursor();
-
-    for await (const user of cursor) {
-      yield user._id.toString();
-    }
   }
 
   public async readAll(): Promise<IUser[]> {

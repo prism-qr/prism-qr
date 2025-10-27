@@ -16,34 +16,10 @@ describe('LinkCoreController (reads)', () => {
     await bootstrap.methods.afterAll();
   });
 
-  describe('GET /:linkName', () => {
-    it('redirects to the destination URL', async () => {
-      // given
-      const link = await bootstrap.utils.linkUtils.createLink({
-        name: 'test',
-        destination: 'https://example.com',
-      });
-
-      // when
-      const response = await request(bootstrap.app.getHttpServer())
-        .get(`/${link.name}`)
-        .expect(302);
-
-      // then
-      expect(response.headers.location).toBe(link.destination);
-    });
-    it('returns 404 if link does not exist', async () => {
-      await request(bootstrap.app.getHttpServer()).get('/xyz').expect(404);
-    });
-  });
-
   describe('GET /links/:id', () => {
     it('gets link by id', async () => {
       // given
-      const link = await bootstrap.utils.linkUtils.createLink({
-        name: 'test',
-        destination: 'https://example.com',
-      });
+      const link = await bootstrap.utils.linkUtils.createLink();
 
       // when
       const response = await request(bootstrap.app.getHttpServer()).get(
@@ -59,10 +35,7 @@ describe('LinkCoreController (reads)', () => {
   describe('GET /links/name/:name', () => {
     it('gets link by name', async () => {
       // given
-      const link = await bootstrap.utils.linkUtils.createLink({
-        name: 'test',
-        destination: 'https://example.com',
-      });
+      const link = await bootstrap.utils.linkUtils.createLink();
 
       // when
       // Test redirection

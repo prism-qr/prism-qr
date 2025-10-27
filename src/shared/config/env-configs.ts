@@ -47,7 +47,7 @@ export const EnvConfigs: EnvConfigs = {
       chatId: '-1002637928179',
     },
     internal: {
-      backendUrl: 'localhost:3003',
+      backendUrl: 'https://qrcode.com',
     },
     stripe: {
       earlyBirdPriceId: process.env.STRIPE_EARLY_BIRD_PRICE_ID!,

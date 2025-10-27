@@ -1,6 +1,6 @@
 export interface ILink {
   id: string;
-  userId;
+  userId: string;
   name: string;
   destination: string;
 }

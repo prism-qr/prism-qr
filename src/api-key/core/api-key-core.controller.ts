@@ -1,20 +1,38 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
+import { IApiKey } from './entities/api-key.interface';
+import { ApiKeyWriteService } from '../write/api-key-write.service';
+import { JwtAuthGuard } from 'src/auth/core/guards/jwt-auth.guard';
 import { ApiKeyReadService } from '../read/api-key-read.service';
 
 @Controller('')
-@ApiTags('Api keys')
 export class ApiKeyCoreController {
-  constructor(private readonly apiKeyReadService: ApiKeyReadService) {}
+  constructor(
+    private readonly apiKeyWriteService: ApiKeyWriteService,
+    private readonly apiKeyReadService: ApiKeyReadService,
+  ) {}
 
-  // @ApiBearerAuth()
-  // @Get('users/:userId/api_keys')
-  // @ApiResponse({ type: ApiKeySerialized, isArray: true })
-  // public async getUserApiKeys(
-  //   @Param('userId') userId: string,
-  // ): Promise<ApiKeySerialized[]> {
-  //   const apiKeys = await this.apiKeyReadService.readApiKeysByUserId(userId);
+  @UseGuards(JwtAuthGuard)
+  @Get('links/:linkId/api_key')
+  public async getApiKey(
+    @Param('linkId') linkId: string,
+  ): Promise<{ apiKey: string }> {
+    const apiKeyCount = await this.apiKeyReadService.countByLinkId(linkId);
 
-  //   return apiKeys.map((apiKey) => ApiKeySerializer.serialize(apiKey));
-  // }
+    const MAX_API_KEYS_PER_LINK = 5;
+
+    if (apiKeyCount >= MAX_API_KEYS_PER_LINK) {
+      throw new ForbiddenException(
+        'Cannot create more API keys. Maximum limit reached.',
+      );
+    }
+    const apiKey = await this.apiKeyWriteService.create(linkId);
+
+    return { apiKey: apiKey.apiKey };
+  }
 }

@@ -12,10 +12,10 @@ export class LinkUtils {
     this.linkModel = this.app.get(getModelToken(LinkEntity.name));
   }
 
-  async createLink(dto: CreateLinkDto) {
+  async createLink(dto?: Partial<CreateLinkDto>) {
     const link = await this.linkModel.create({
-      name: dto.name,
-      destination: dto.destination,
+      name: dto?.name || 'default',
+      destination: dto?.destination || 'https://example.com',
     });
     return LinkEntity.mapToInterface(link.toObject());
   }

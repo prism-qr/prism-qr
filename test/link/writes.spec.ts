@@ -40,13 +40,10 @@ describe('LinkCoreController (writes)', () => {
     });
   });
 
-  describe('PUT /links', () => {
+  describe('PATCH /links', () => {
     it('updates link destination', async () => {
       // given
-      const link = await bootstrap.utils.linkUtils.createLink({
-        name: 'test',
-        destination: 'https://example.com',
-      });
+      const link = await bootstrap.utils.linkUtils.createLink();
       const updateDto: UpdateLinkDto = {
         id: link.id,
         destination: 'https://example2.com',
@@ -54,7 +51,7 @@ describe('LinkCoreController (writes)', () => {
 
       // when
       const response = await request(bootstrap.app.getHttpServer())
-        .put(`/links`)
+        .patch(`/links`)
         .send(updateDto);
 
       // then

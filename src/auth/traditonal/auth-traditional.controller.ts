@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthTraditionalService } from './auth-traditional.service';
 import { LoginTraditionalDto } from './dto/login-traditional.dto';
-import { Public } from '../core/decorators/is-public';
+import { Public } from '../core/decorators/is-public.decorator';
 import { TokenResponse } from 'src/shared/responses/token.response';
 import { RegisterTraditionalDto } from './dto/register-traditional.dto';
 

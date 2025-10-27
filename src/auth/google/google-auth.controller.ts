@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { Public } from '../core/decorators/is-public';
+import { Public } from '../core/decorators/is-public.decorator';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GoogleAuthLoginService } from './google-auth-login.service';
 import { GoogleLoginBody } from './dto/google-login.body';

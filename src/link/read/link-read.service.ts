@@ -10,7 +10,7 @@ export class LinkReadService {
     @InjectModel(LinkEntity.name) private linkModel: Model<LinkEntity>,
   ) {}
 
-  async readById(id: string): Promise<ILink> {
+  public async readById(id: string): Promise<ILink> {
     const link = await this.linkModel.findById(id).lean<LinkEntity>();
     if (!link) {
       throw new NotFoundException();
@@ -19,12 +19,25 @@ export class LinkReadService {
     return LinkEntity.mapToInterface(link);
   }
 
-  async readByName(name: string): Promise<ILink> {
+  public async readByName(name: string): Promise<ILink> {
     const link = await this.linkModel.findOne({ name }).lean<LinkEntity>();
     if (!link) {
       throw new NotFoundException();
     }
 
     return LinkEntity.mapToInterface(link);
+  }
+
+  public async readByUserId(userId: string): Promise<ILink[]> {
+    const links = await this.linkModel
+      .find({ userId })
+      .lean<LinkEntity[]>()
+      .exec();
+
+    return links.map((link) => LinkEntity.mapToInterface(link));
+  }
+
+  public async countByUserId(userId: string): Promise<number> {
+    return await this.linkModel.countDocuments({ userId }).exec();
   }
 }
