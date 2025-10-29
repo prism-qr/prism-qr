@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { SubscriptionManagementService } from './subscription-management.service';
+import { SubscriptionReadModule } from '../read/subscription-read.module';
+import { SubscriptionWriteModule } from '../write/subscription-write.module';
+
+@Module({
+  imports: [SubscriptionReadModule, SubscriptionWriteModule],
+  providers: [SubscriptionManagementService],
+  exports: [SubscriptionManagementService],
+})
+export class SubscriptionManagementModule {}
