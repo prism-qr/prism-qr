@@ -1,0 +1,17 @@
+{
+  "name": "prism-qr-monorepo",
+  "version": "1.0.0",
+  "description": "QR code monorepo managed by pnpm workspaces",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --recursive dev",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "clean": "pnpm --recursive clean"
+  },
+  "keywords": ["monorepo", "qr", "prism"],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.20.0"
+}
