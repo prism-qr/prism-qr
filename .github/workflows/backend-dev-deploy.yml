@@ -1,0 +1,84 @@
+name: Deploy backend (dev)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+    paths:
+      - "apps/backend/**"
+      - ".github/workflows/**"
+      - ".github/templates/**"
+
+jobs:
+  find-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      test-batches: ${{ steps.find-tests.outputs.test-batches }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find test files
+        id: find-tests
+        uses: "./.github/templates/find-tests"
+        with:
+          batch-size: "3"
+
+  test:
+    needs: find-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-batch: ${{ fromJson(needs.find-tests.outputs.test-batches) }}
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run test batch
+        uses: "./.github/templates/test"
+        with:
+          test-batch: ${{ matrix.test-batch }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and push
+        uses: "./.github/templates/build-and-push"
+        with:
+          context: ./apps/backend
+          file: ./apps/backend/Dockerfile
+          dockerhub-username: ${{ secrets.BACKEND_DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.BACKEND_DOCKERHUB_TOKEN }}
+          image-name: mcdominik/prismqr-backend-dev
+
+      - name: Deploy
+        uses: "./.github/templates/deploy-backend-container"
+        with:
+          host: ${{ secrets.BACKEND_DEV_SSH_HOST }}
+          username: ${{ secrets.BACKEND_DEV_SSH_USER }}
+          port: ${{ secrets.BACKEND_DEV_SSH_PORT }}
+          ssh-private-key: ${{ secrets.BACKEND_DEV_SSH_KEY }}
+          server-port: 3001
+          application-port: 3000
+          image-name: mcdominik/prismqr-backend-dev
+          container-name: prismqr-backend-dev
+          mongo-uri: ${{ secrets.BACKEND_DEV_MONGO_URI }}
+          our-env: dev
+          whitelisted-emails: ${{ secrets.BACKEND_DEV_WHITELISTED_EMAILS }}
+          auth-jwt-secret: ${{ secrets.BACKEND_DEV_AUTH_JWT_SECRET }}
+          admin-secret-admin-key: ${{ secrets.BACKEND_DEV_ADMIN_SECRET_ADMIN_KEY }}
+          internal-telegram-bot-token: ${{ secrets.BACKEND_DEV_INTERNAL_TELEGRAM_BOT_TOKEN }}
+          google-oauth-client-id: ${{ secrets.BACKEND_DEV_GOOGLE_OAUTH_CLIENT_ID }}
+          google-oauth-client-secret: ${{ secrets.BACKEND_DEV_GOOGLE_OAUTH_CLIENT_SECRET }}
+
+      - name: Prune
+        uses: "./.github/templates/prune"
+        with:
+          host: ${{ secrets.BACKEND_DEV_SSH_HOST }}
+          username: ${{ secrets.BACKEND_DEV_SSH_USER }}
+          port: ${{ secrets.BACKEND_DEV_SSH_PORT }}
+          ssh-private-key: ${{ secrets.BACKEND_DEV_SSH_KEY }}

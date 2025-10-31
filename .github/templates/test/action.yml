@@ -1,0 +1,38 @@
+name: "Run test batch"
+
+inputs:
+  test-batch:
+    description: "Space-separated list of test files to run"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v5
+      with:
+        node-version: 22.x
+
+    - name: Install dependencies
+      run: cd apps/backend && npm ci
+      shell: bash
+
+    - name: Run test batch
+      run: |
+        cd apps/backend
+        TEST_FILES="${{ inputs.test-batch }}"
+        echo "Running tests for: $TEST_FILES"
+
+        # Convert space-separated string to regex pattern for Jest
+        # Example: "test1.spec.ts test2.spec.ts test3.spec.ts" becomes "(test1\.spec\.ts|test2\.spec\.ts|test3\.spec\.ts)"
+        REGEX_PATTERN=$(echo "$TEST_FILES" | sed 's/ /|/g' | sed 's/\./\\./g' | sed 's/^/(/; s/$/)/')
+
+        echo "Jest pattern: $REGEX_PATTERN"
+        npx jest --testPathPattern="$REGEX_PATTERN" --runInBand --forceExit
+      shell: bash
+      env:
+        OUR_ENV: "dev"
+        AUTH_JWT_SECRET: "test"
+        STRIPE_EARLY_BIRD_PRICE_ID: "test-early-bird-price-id"
+        STRIPE_API_KEY_SECRET: "test-api-key-secret"
+        ADMIN_SECRET_ADMIN_KEY: "test"
