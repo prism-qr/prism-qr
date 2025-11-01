@@ -6,7 +6,7 @@ import { getEnvConfig } from 'src/shared/config/env-configs';
 export class LinkCoreService {
   constructor(private readonly linkReadService: LinkReadService) {}
 
-  isValidUrl(url: string): boolean {
+  isValidUrl(url: any): boolean {
     try {
       new URL(url);
       return true;
@@ -18,8 +18,9 @@ export class LinkCoreService {
   async getTargetUrl(name: string) {
     // TODO extends logic
     const link = await this.linkReadService.readByName(name);
-    return this.isValidUrl(link.destination)
-      ? link.destination
+
+    return this.isValidUrl(link?.destination)
+      ? link?.destination
       : getEnvConfig().internal.backendUrl;
   }
 }

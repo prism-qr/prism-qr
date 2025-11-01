@@ -52,6 +52,8 @@ jobs:
           internal-telegram-bot-token: ${{ secrets.BACKEND_PROD_INTERNAL_TELEGRAM_BOT_TOKEN }}
           google-oauth-client-id: ${{ secrets.BACKEND_PROD_GOOGLE_OAUTH_CLIENT_ID }}
           google-oauth-client-secret: ${{ secrets.BACKEND_PROD_GOOGLE_OAUTH_CLIENT_SECRET }}
+          better-stack-source-token: ${{ secrets.BACKEND_PROD_BETTER_STACK_SOURCE_TOKEN }}
+          better-stack-source-endpoint: ${{ secrets.BACKEND_PROD_BETTER_STACK_SOURCE_ENDPOINT }}
 
       - name: Prune
         uses: "./.github/templates/prune"

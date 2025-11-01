@@ -68,4 +68,6 @@ runs:
           -e INTERNAL_TELEGRAM_BOT_TOKEN=${{ inputs.internal-telegram-bot-token }} \
           -e GOOGLE_OAUTH_CLIENT_ID=${{ inputs.google-oauth-client-id }} \
           -e GOOGLE_OAUTH_CLIENT_SECRET=${{ inputs.google-oauth-client-secret }} \
+          -e BETTER_STACK_SOURCE_TOKEN=${{ inputs.better-stack-source-token }} \
+          -e BETTER_STACK_SOURCE_ENDPOINT=${{ inputs.better-stack-source-endpoint }} \
           ${{ inputs.image-name }}

@@ -9,9 +9,34 @@ import { RelayModule } from './relay/relay.module';
 import { ApiKeyCoreModule } from './api-key/core/api-key-core.module';
 import { HealthModule } from './health/health.module';
 import { LinkVisitCoreModule } from './link-visit/core/link-visit-core.module';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import { LogtailTransport } from '@logtail/winston';
+import { Logtail } from '@logtail/node';
+
+const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
+  endpoint: process.env.BETTER_STACK_SOURCE_ENDPOINT!,
+});
 
 @Module({
   imports: [
+    WinstonModule.forRoot({
+      transports: [
+        // Colored console logs for development
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.colorize(),
+            winston.format.printf(
+              ({ timestamp, level, message, context, ...meta }) => {
+                return `${timestamp} [${context || 'Application'}] ${level}: ${message}`;
+              },
+            ),
+          ),
+        }),
+        new LogtailTransport(logtail),
+      ],
+    }),
     MongooseModule.forRoot(getEnvConfig().mongo.uri, { dbName: 'default' }),
     EventEmitterModule.forRoot(),
     LinkCoreModule,
@@ -20,7 +45,7 @@ import { LinkVisitCoreModule } from './link-visit/core/link-visit-core.module';
     UserCoreModule,
     RelayModule,
     ApiKeyCoreModule,
-    HealthModule
+    HealthModule,
   ],
   controllers: [],
   providers: [],

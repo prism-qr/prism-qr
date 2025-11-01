@@ -64,7 +64,10 @@ export class LinkCoreController {
   @SkipJwtAuth()
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Patch(':linkId')
-  async updateLink(@Param('linkId') linkId: string, @Body() dto: UpdateLinkDto): Promise<ILink> {
+  async updateLink(
+    @Param('linkId') linkId: string,
+    @Body() dto: UpdateLinkDto,
+  ): Promise<ILink> {
     return await this.linkWriteService.update(linkId, dto.destination);
   }
 
@@ -73,9 +76,8 @@ export class LinkCoreController {
     return await this.linkWriteService.delete(linkId);
   }
 
-
   @Get('name/:name')
-  async getLinkByName(@Param('name') name: string): Promise<ILink> {
+  async getLinkByName(@Param('name') name: string): Promise<ILink | null> {
     return await this.linkReadService.readByName(name);
   }
 }

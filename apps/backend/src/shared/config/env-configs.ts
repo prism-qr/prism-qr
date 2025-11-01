@@ -3,6 +3,7 @@ import { getOurEnv, OurEnv } from '../types/our-env.enum';
 interface EnvConfig {
   internal: {
     backendUrl: string;
+    frontendUrl: string;
   };
   google: {
     clientId: string;
@@ -37,7 +38,8 @@ export const EnvConfigs: EnvConfigs = {
       chatId: '-1002637928179',
     },
     internal: {
-      backendUrl: 'https://prismqr.com',
+      backendUrl: 'https://prodprismqr.bieda.it',
+      frontendUrl: 'https://prismqr.com',
     },
     google: {
       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID!,
@@ -56,7 +58,8 @@ export const EnvConfigs: EnvConfigs = {
   },
   [OurEnv.Dev]: {
     internal: {
-      backendUrl: 'localhost:3003',
+      backendUrl: 'https://devprismqr.bieda.it',
+      frontendUrl: 'https://dev.prismqr.com',
     },
     telegram: {
       token: process.env.TELEGRAM_TOKEN!,

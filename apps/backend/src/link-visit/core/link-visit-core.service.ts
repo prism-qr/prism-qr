@@ -8,9 +8,7 @@ import { CreateLinkVisitParams } from './types/create-link-visit-params';
 export class LinkVisitCoreService {
   private readonly logger = new Logger(LinkVisitCoreService.name);
 
-  constructor(
-    private readonly linkVisitWriteService: LinkVisitWriteService,
-  ) {}
+  constructor(private readonly linkVisitWriteService: LinkVisitWriteService) {}
 
   tryGetLanguageHeaderFromRequest(req: Request): string | undefined {
     const languageHeader = req.headers['accept-language'];
@@ -37,19 +35,22 @@ export class LinkVisitCoreService {
     return ip;
   }
 
-  async tryGetGeoLocationFromIp(ip: string | undefined): Promise<IpApiResponse | undefined> {
+  async tryGetGeoLocationFromIp(
+    ip: string | undefined,
+  ): Promise<IpApiResponse | undefined> {
     if (!ip) {
       return;
     }
-    
+
     try {
-      const response = await axios.get<IpApiResponse>(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,lat,lon,timezone`)
+      const response = await axios.get<IpApiResponse>(
+        `http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,lat,lon,timezone`,
+      );
       if (response.data.status !== 'success') {
         return;
       }
       return response.data;
-    }
-    catch (error) {
+    } catch (error) {
       this.logger.error(`Error getting geo location from ip: ${ip}`, error);
       return;
     }
@@ -57,13 +58,11 @@ export class LinkVisitCoreService {
 
   async logVisitDetails(linkId: string, req: Request): Promise<void> {
     const languageHeader = this.tryGetLanguageHeaderFromRequest(req);
-    this.logger.log('header', languageHeader)
     const referrer = this.tryGetReferrerFromRequest(req);
-    this.logger.log('refferer', referrer)
 
     const ip = this.tryGetIpFromRequest(req);
     const geoLocation = await this.tryGetGeoLocationFromIp(ip);
-    
+
     const params: CreateLinkVisitParams = {
       linkId: linkId,
       referrer: referrer,
@@ -74,9 +73,9 @@ export class LinkVisitCoreService {
       city: geoLocation?.city,
       lat: geoLocation?.lat,
       lon: geoLocation?.lon,
-    }
+    };
 
-    this.logger.log(params)
+    this.logger.log(`${JSON.stringify(params)}`);
     // TODO uncoment to collect logs
     // await this.linkVisitWriteService.create(params);
   }

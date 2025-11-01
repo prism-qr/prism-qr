@@ -19,10 +19,10 @@ export class LinkReadService {
     return LinkEntity.mapToInterface(link);
   }
 
-  public async readByName(name: string): Promise<ILink> {
+  public async readByName(name: string): Promise<ILink | null> {
     const link = await this.linkModel.findOne({ name }).lean<LinkEntity>();
     if (!link) {
-      throw new NotFoundException();
+      return null;
     }
 
     return LinkEntity.mapToInterface(link);
