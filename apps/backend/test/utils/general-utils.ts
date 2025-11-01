@@ -17,50 +17,28 @@ export class GeneralUtils {
       this.linkModel = this.app.get(getModelToken(LinkEntity.name));
     }
     public async setupFreeFlow() {
-        const registerResponse = await request(this.app.getHttpServer())
-            .post('/auth/traditional/register')
-            .send({
-                email: "test@test.com",
-                password: "password"
-            });
-        
-        const { token } = registerResponse.body as TokenResponse;
-
-        const userEntity = await this.userModel.findOne({ email: "test@test.com" }).lean();
-
-        if (!userEntity) {
-            throw new Error('User not found after registration');
-        }
+        const token  = await request(this.app.getHttpServer()).post('auth/traditional/register').send({
+            email: "test@test.com",
+            password: "password"
+        }) as unknown as TokenResponse;
+        const user = await request(this.app.getHttpServer()).get('auth/traditional/login').set('Authorization', `Bearer ${token}`).send({
+            email: "test@test.com",
+            password: "password"
+        }) as unknown as IUser;
 
         await this.userModel.updateOne(
             {
-              _id: userEntity._id,
+              _id: new Types.ObjectId(user.id),
             },
             {
               emailConfirmed: true,
             },
           );
 
-        const linkResponse = await request(this.app.getHttpServer())
-            .post('/links')
-            .set('Authorization', `Bearer ${token}`)
-            .send({
-                name: 'default',
-                destination: 'https://example.com',
-            });
-
-        const link = linkResponse.body as ILink;
-
-        const user: IUser = {
-            id: userEntity._id.toString(),
-            email: userEntity.email,
-            authMethod: userEntity.authMethod,
-            passwordHash: userEntity.passwordHash,
-            accountClaimStatus: userEntity.accountClaimStatus,
-            tier: userEntity.tier,
-            stripeCustomerId: userEntity.stripeCustomerId,
-            paymentsMetadata: userEntity.paymentsMetadata,
-        };
+        const link = await request(this.app.getHttpServer()).post('links').set('Authorization', `Bearer ${token}`).send({
+            name: 'default',
+            destination: 'https://example.com',
+        }) as unknown as ILink;
 
         return {
             token,
