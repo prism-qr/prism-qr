@@ -30,8 +30,11 @@ describe('RelayController', () => {
       expect(response.headers.location).toBe(link.destination);
     });
 
-    it('returns 404 if link does not exist', async () => {
-      await request(bootstrap.app.getHttpServer()).get('/xyz').expect(404);
+    it('returns landing page if link does not exist', async () => {
+      const response = await request(bootstrap.app.getHttpServer())
+        .get('/xyz')
+        .expect(302);
+      expect(response.headers.location).toBe('https://devprismqr.bieda.it');
     });
   });
 });
