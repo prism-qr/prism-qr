@@ -4,13 +4,12 @@ import { Injectable, Logger } from '@nestjs/common';
 //   StripeEvents,
 //   StripePaymentSucceededEvent,
 // } from '../../payments/stripe/stripe-event.emitter';
-import { UserReadService } from '../read/user-read.service';
-import { UserWriteService } from '../write/user-write.service';
+// import { UserReadService } from '../read/user-read.service';
+// import { UserWriteService } from '../write/user-write.service';
 
 @Injectable()
 export class UserCoreService {
-  constructor() // private readonly userReadService: UserReadService,
-  // private readonly userWriteService: UserWriteService,
+  constructor() // private readonly userWriteService: UserWriteService, // private readonly userReadService: UserReadService,
   // private readonly logger: Logger,
   {}
 

@@ -23,6 +23,9 @@ export class UserEntity {
   passwordHash?: string;
 
   @Prop()
+  emailConfirmed: boolean;
+
+  @Prop()
   accountClaimStatus: AccountClaimStatus;
 
   @Prop({ type: Date })

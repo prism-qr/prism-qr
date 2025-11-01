@@ -7,6 +7,7 @@ import {
   Patch,
   BadRequestException,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { LinkReadService } from 'src/link/read/link-read.service';
 import { ILink } from './entities/link.interface';
@@ -62,10 +63,16 @@ export class LinkCoreController {
 
   @SkipJwtAuth()
   @UseGuards(JwtOrApiKeyAuthGuard)
-  @Patch()
-  async updateLink(@Body() dto: UpdateLinkDto): Promise<ILink> {
-    return await this.linkWriteService.update(dto);
+  @Patch(':linkId')
+  async updateLink(@Param('linkId') linkId: string, @Body() dto: UpdateLinkDto): Promise<ILink> {
+    return await this.linkWriteService.update(linkId, dto.destination);
   }
+
+  @Delete(':linkId')
+  async deleteLink(@Param('linkId') linkId: string): Promise<void> {
+    return await this.linkWriteService.delete(linkId);
+  }
+
 
   @Get('name/:name')
   async getLinkByName(@Param('name') name: string): Promise<ILink> {
