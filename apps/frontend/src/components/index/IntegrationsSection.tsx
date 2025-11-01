@@ -49,8 +49,8 @@ export function IntegrationsSection() {
                   More integrations coming soon
                 </h3>
                 <p className="text-neutral-400 text-lg">
-                  We're happy to add integrations for other platforms! Let us
-                  know what you need and we'll prioritize it.
+                  We&apos;re happy to add integrations for other platforms! Let us
+                  know what you need and we&apos;ll prioritize it.
                 </p>
               </div>
             </div>
