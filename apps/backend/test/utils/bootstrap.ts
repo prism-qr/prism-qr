@@ -16,6 +16,7 @@ import { AuthCoreModule } from 'src/auth/core/auth-core.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UserEntity } from 'src/user/core/entities/user.entity';
 import { ApiKeyCoreModule } from 'src/api-key/core/api-key-core.module';
+import { GeneralUtils } from './general-utils';
 
 export async function createTestApp() {
   const module: TestingModule = await Test.createTestingModule({
@@ -69,6 +70,7 @@ export async function createTestApp() {
     },
     utils: {
       linkUtils: new LinkUtils(app),
+      generalUtils: new GeneralUtils(app)
     },
     methods: {
       clearDatabase,

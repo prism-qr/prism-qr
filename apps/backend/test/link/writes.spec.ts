@@ -20,7 +20,15 @@ describe('LinkCoreController (writes)', () => {
 
   describe('POST /links', () => {
     it('should create a new link', async () => {
-      // when
+      const registerResponse = await request(bootstrap.app.getHttpServer())
+        .post('/auth/traditional/register')
+        .send({
+          email: "posttest@test.com",
+          password: "password"
+        });
+      
+      const { token } = registerResponse.body;
+  
       const linkPayload: CreateLinkDto = {
         name: 'testlink',
         destination: 'https://example.com',
@@ -28,10 +36,10 @@ describe('LinkCoreController (writes)', () => {
 
       const response = await request(bootstrap.app.getHttpServer())
         .post('/links')
+        .set('Authorization', `Bearer ${token}`)
         .send(linkPayload)
         .expect(201);
 
-      // then
       expect(response.body).toMatchObject({
         id: expect.any(String),
         destination: linkPayload.destination,
@@ -42,20 +50,30 @@ describe('LinkCoreController (writes)', () => {
 
   describe('PATCH /links', () => {
     it('updates link destination', async () => {
-      // given
-      const link = await bootstrap.utils.linkUtils.createLink();
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
+
       const updateDto: UpdateLinkDto = {
-        id: link.id,
         destination: 'https://example2.com',
       };
 
-      // when
       const response = await request(bootstrap.app.getHttpServer())
-        .patch(`/links`)
+        .patch(`/links/${setup.link.id}`)
+        .set('Authorization', `Bearer ${setup.token}`)
         .send(updateDto);
 
-      // then
       expect(response.body.destination).toBe(updateDto.destination);
+    });
+  });
+
+  describe('DELETE /links/:linkId', () => {
+    it('deletes link', async () => {
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
+
+      const response = await request(bootstrap.app.getHttpServer())
+        .delete(`/links/${setup.link.id}`)
+        .set('Authorization', `Bearer ${setup.token}`)
+
+      expect(response.status).toBe(200)
     });
   });
 });

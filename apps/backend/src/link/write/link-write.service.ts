@@ -24,11 +24,6 @@ export class LinkWriteService {
         userId,
       });
 
-      console.log(link);
-
-      console.log(link.toObject());
-      console.log(LinkEntity.mapToInterface(link.toObject()));
-
       return LinkEntity.mapToInterface(link.toObject());
     } catch (err) {
       if (err.code === 11000) {
@@ -39,11 +34,11 @@ export class LinkWriteService {
     }
   }
 
-  public async update(dto: UpdateLinkDto): Promise<ILink> {
-    const updateQuery = this.constructUpdateQuery(dto);
+  public async update(linkId: string, destination: string): Promise<ILink> {
+    const updateQuery = this.constructUpdateQuery({destination});
 
     const updatedLink = await this.linkModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(dto.id) },
+      { _id: new Types.ObjectId(linkId) },
       updateQuery,
       { new: true },
     );
