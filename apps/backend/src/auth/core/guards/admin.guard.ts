@@ -12,7 +12,7 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const adminKey = request.headers['super-secret-admin-key'];
 
-    if (adminKey !== getEnvConfig().admin.superSecretAdminKey) {
+    if (adminKey !== getEnvConfig().admin.secretAdminKey) {
       throw new UnauthorizedException('Invalid admin key');
     }
 

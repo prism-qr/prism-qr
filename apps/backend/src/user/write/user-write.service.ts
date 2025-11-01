@@ -25,6 +25,7 @@ export class UserWriteService {
       const user = await this.userModel.create({
         email: params.email,
         passwordHash: params.passwordHash,
+        emailConfirmed: false,
         authMethod: params.authMethod,
         lastActivityDate: newDateUTC(),
         tier: UserTier.Free,

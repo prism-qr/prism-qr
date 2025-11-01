@@ -1,0 +1,71 @@
+name: Deploy
+
+inputs:
+  # SSH
+  host:
+    required: true
+  username:
+    required: true
+  port:
+    required: true
+  ssh-private-key:
+    required: true
+
+  # Docker
+  image-name:
+    required: true
+  server-port:
+    required: true
+  container-name:
+    required: true
+  application-port:
+    required: true
+
+  # App
+  mongo-uri:
+    required: true
+  our-env:
+    required: true
+
+  whitelisted-emails:
+    required: true
+  auth-jwt-secret:
+    required: true
+
+  admin-secret-admin-key:
+    required: true
+
+  internal-telegram-bot-token:
+    required: true
+
+  google-oauth-client-id:
+    required: true
+  google-oauth-client-secret:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Update image inside VPS
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ inputs.host }}
+        USERNAME: ${{ inputs.username }}
+        PORT: ${{ inputs.port }}
+        KEY: ${{ inputs.ssh-private-key }}
+        script: |
+          docker pull ${{ inputs.image-name }}
+          docker rm -f ${{ inputs.container-name }}
+          docker run -d \
+          -p ${{ inputs.server-port }}:${{ inputs.application-port }} \
+          --restart=always \
+          --name ${{ inputs.container-name }} \
+          -e MONGO_URI=${{ inputs.mongo-uri }} \
+          -e OUR_ENV=${{ inputs.our-env }} \
+          -e WHITELISTED_EMAILS=${{ inputs.whitelisted-emails }} \
+          -e AUTH_JWT_SECRET=${{ inputs.auth-jwt-secret }} \
+          -e ADMIN_SECRET_ADMIN_KEY=${{ inputs.admin-secret-admin-key }} \
+          -e INTERNAL_TELEGRAM_BOT_TOKEN=${{ inputs.internal-telegram-bot-token }} \
+          -e GOOGLE_OAUTH_CLIENT_ID=${{ inputs.google-oauth-client-id }} \
+          -e GOOGLE_OAUTH_CLIENT_SECRET=${{ inputs.google-oauth-client-secret }} \
+          ${{ inputs.image-name }}

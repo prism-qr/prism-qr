@@ -18,34 +18,29 @@ describe('LinkCoreController (reads)', () => {
 
   describe('GET /links/:id', () => {
     it('gets link by id', async () => {
-      // given
-      const link = await bootstrap.utils.linkUtils.createLink();
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
+      
+      const response = await request(bootstrap.app.getHttpServer())
+        .get(`/links/${setup.link.id}`)
+        .set('Authorization', `Bearer ${setup.token}`);
 
-      // when
-      const response = await request(bootstrap.app.getHttpServer()).get(
-        `/links/${link.id}`,
-      );
-
-      // then
-      expect(response.body.destination).toBe(link.destination);
-      expect(response.body.name).toBe(link.name);
+      expect(response.status).toBe(200);
+      expect(response.body.destination).toBe(setup.link.destination);
+      expect(response.body.name).toBe(setup.link.name);
     });
   });
 
   describe('GET /links/name/:name', () => {
     it('gets link by name', async () => {
-      // given
-      const link = await bootstrap.utils.linkUtils.createLink();
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
 
-      // when
-      // Test redirection
-      const response = await request(bootstrap.app.getHttpServer()).get(
-        `/links/name/${link.name}`,
-      );
+      const response = await request(bootstrap.app.getHttpServer())
+        .get(`/links/name/${setup.link.name}`)
+        .set('Authorization', `Bearer ${setup.token}`);
 
-      // then
-      expect(response.body.destination).toBe(link.destination);
-      expect(response.body.name).toBe(link.name);
+      expect(response.status).toBe(200);
+      expect(response.body.destination).toBe(setup.link.destination);
+      expect(response.body.name).toBe(setup.link.name);
     });
   });
 });
