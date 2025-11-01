@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { login, loginWithGoogle } from "@/lib/auth";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export function LoginPage() {
@@ -202,9 +203,9 @@ export function LoginPage() {
 
             <p className="text-center text-sm text-neutral-400">
               Don&apos;t have an account?{" "}
-              <a href="/auth/register" className="text-white hover:text-neutral-300 transition-colors">
+              <Link href="/auth/register" className="text-white hover:text-neutral-300 transition-colors">
                 Sign up
-              </a>
+              </Link>
             </p>
           </div>
         </div>

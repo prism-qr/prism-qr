@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Image from "next/image";
 import { Marquee } from "@/components/ui/marquee";
 import { cn } from "@/lib/utils";
 
@@ -82,10 +83,10 @@ const ReviewCard = ({ img, name, username, body }: ReviewCardProps) => {
       )}
     >
       <div className="flex flex-row items-center gap-2">
-        <img
+        <Image
           className="rounded-full border border-neutral-700"
-          width="32"
-          height="32"
+          width={32}
+          height={32}
           alt=""
           src={img}
         />
@@ -113,7 +114,7 @@ export function ReviewsSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            But don't just take our word for it
+            But don&apos;t just take our word for it
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
             See what teams are saying about their experience
