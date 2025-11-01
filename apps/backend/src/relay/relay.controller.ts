@@ -1,15 +1,21 @@
-import { Controller, Get, Param, Redirect } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Redirect, Req } from '@nestjs/common';
 import { Public } from 'src/auth/core/decorators/is-public.decorator';
+import { LinkVisitCoreService } from 'src/link-visit/core/link-visit-core.service';
 import { LinkCoreService } from 'src/link/core/link-core.service';
 
 @Controller()
 export class RelayController {
-  constructor(private readonly linkCoreService: LinkCoreService) {}
+  private readonly logger = new Logger(RelayController.name);
+  constructor(private readonly linkCoreService: LinkCoreService,
+    private readonly linkVisitCoreService: LinkVisitCoreService
+  ) {}
 
   @Public()
   @Get(':name')
   @Redirect()
-  async redirect(@Param('name') name: string) {
+  async redirect(@Req() req: Request, @Param('name') name: string) {
+    await this.linkVisitCoreService.logVisitDetails(name, req);
+
     const targetUrl = await this.linkCoreService.getTargetUrl(name);
     return { url: targetUrl };
   }

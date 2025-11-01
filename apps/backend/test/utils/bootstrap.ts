@@ -17,6 +17,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UserEntity } from 'src/user/core/entities/user.entity';
 import { ApiKeyCoreModule } from 'src/api-key/core/api-key-core.module';
 import { GeneralUtils } from './general-utils';
+import { LinkVisitCoreModule } from 'src/link-visit/core/link-visit-core.module';
 
 export async function createTestApp() {
   const module: TestingModule = await Test.createTestingModule({
@@ -28,6 +29,7 @@ export async function createTestApp() {
       RelayModule,
       AuthCoreModule,
       ApiKeyCoreModule,
+      LinkVisitCoreModule
     ],
   }).compile();
 
