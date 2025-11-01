@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { useAuthStore } from "@/lib/store/auth-store";
@@ -14,8 +14,37 @@ export function RegisterPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const loginStore = useAuthStore();
+  const [isChecking, setIsChecking] = useState(true);
   const router = useRouter();
+  const { isAuthenticated, token, login: loginAction } = useAuthStore();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkAuth = () => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+          useAuthStore.setState({ token: storedToken, isAuthenticated: true });
+          router.push("/dashboard");
+        }
+        setIsChecking(false);
+      };
+      
+      if (document.readyState === 'complete') {
+        checkAuth();
+      } else {
+        window.addEventListener('load', checkAuth);
+        return () => window.removeEventListener('load', checkAuth);
+      }
+    } else {
+      setIsChecking(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if ((isAuthenticated || token) && !isChecking) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, token, isChecking, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +64,7 @@ export function RegisterPage() {
 
     try {
       const response = await register({ email, password });
-      loginStore.login(response.token);
+      loginAction(response.token);
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to register");
@@ -54,6 +83,17 @@ export function RegisterPage() {
     
     window.location.href = authUrl;
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6">

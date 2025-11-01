@@ -7,15 +7,8 @@ import { useRouter } from "next/router";
 import { QRCodeSVG } from "qrcode.react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { RefreshCw, ExternalLink, Check, LogOut, Copy, Key, Eye, EyeOff, Download } from "lucide-react";
-import { apiRequest } from "@/lib/api";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-
-interface Link {
-  id: string;
-  userId: string;
-  name: string;
-  destination: string;
-}
+import { Link, getLinks, createLink, updateLink, getApiKey } from "@/lib/api/links";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -49,7 +42,7 @@ export function DashboardPage() {
 
     const fetchUserLinks = async () => {
       try {
-        const links = await apiRequest<Link[]>("/links");
+        const links = await getLinks();
         if (links && links.length > 0) {
           const mostRecentLink = links[links.length - 1];
           setQrLink(mostRecentLink);
@@ -110,23 +103,12 @@ export function DashboardPage() {
     try {
       const currentLink = qrLinkRef.current;
       if (currentLink) {
-        const updatedLink = await apiRequest<Link>(`/links/${currentLink.id}`, {
-          method: "PATCH",
-          body: JSON.stringify({
-            destination: destination.trim(),
-          }),
-        });
+        const updatedLink = await updateLink(currentLink.id, destination.trim());
         setQrLink(updatedLink);
         qrLinkRef.current = updatedLink;
       } else {
         const linkName = generateLinkName();
-        const link = await apiRequest<Link>("/links", {
-          method: "POST",
-          body: JSON.stringify({
-            name: linkName,
-            destination: destination.trim(),
-          }),
-        });
+        const link = await createLink(linkName, destination.trim());
         setQrLink(link);
         qrLinkRef.current = link;
       }
@@ -174,24 +156,17 @@ export function DashboardPage() {
   }, [destinationUrl, isInitialLoad, createOrUpdateLink]);
 
   const handleRefresh = async () => {
-    if (!destinationUrl.trim()) return;
+    if (!destinationUrl.trim() || !qrLink) return;
 
     setInputKey((prev) => prev + 1);
     setLoading(true);
     setError("");
 
     try {
-      const linkName = generateLinkName();
-      const newLink = await apiRequest<Link>("/links", {
-        method: "POST",
-        body: JSON.stringify({
-          name: linkName,
-          destination: destinationUrl.trim(),
-        }),
-      });
-      setQrLink(newLink);
-      qrLinkRef.current = newLink;
-
+      const updatedLink = await updateLink(qrLink.id, destinationUrl.trim());
+      setQrLink(updatedLink);
+      qrLinkRef.current = updatedLink;
+      
       setShowCheckmark(true);
       if (checkmarkTimer.current) {
         clearTimeout(checkmarkTimer.current);
@@ -218,9 +193,7 @@ export function DashboardPage() {
     setError("");
 
     try {
-      const response = await apiRequest<{ apiKey: string }>(
-        `/links/${qrLink.id}/api_key`
-      );
+      const response = await getApiKey(qrLink.id);
       setApiKey(response.apiKey);
       setShowApiKey(true);
       if (typeof window !== 'undefined') {
