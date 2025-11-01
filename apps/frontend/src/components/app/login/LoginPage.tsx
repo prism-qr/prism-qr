@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthStore } from "@/lib/store/auth-store";
 import { login, loginWithGoogle } from "@/lib/auth";
 import { useRouter } from "next/router";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
@@ -13,7 +13,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login: setAuthToken } = useAuth();
+  const loginStore = useAuthStore();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +23,7 @@ export function LoginPage() {
 
     try {
       const response = await login({ email, password });
-      setAuthToken(response.token);
+      loginStore.login(response.token);
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to login");

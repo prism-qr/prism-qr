@@ -1,18 +1,43 @@
-import { useEffect } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.token);
   const router = useRouter();
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (typeof window !== 'undefined') {
+      const checkAuth = () => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+          useAuthStore.setState({ token: storedToken, isAuthenticated: true });
+        }
+        setIsChecking(false);
+      };
+      
+      if (document.readyState === 'complete') {
+        checkAuth();
+      } else {
+        window.addEventListener('load', checkAuth);
+        return () => window.removeEventListener('load', checkAuth);
+      }
+    } else {
+      setIsChecking(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isChecking && !isAuthenticated && !token) {
       router.push("/auth/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isChecking, isAuthenticated, token, router]);
 
-  if (!isAuthenticated) {
+  if (isChecking) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -21,6 +46,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated && !token) {
+    return null;
   }
 
   return <>{children}</>;

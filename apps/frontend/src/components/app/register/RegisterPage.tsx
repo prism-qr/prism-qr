@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthStore } from "@/lib/store/auth-store";
 import { register, loginWithGoogle } from "@/lib/auth";
 import { useRouter } from "next/router";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
@@ -14,7 +14,7 @@ export function RegisterPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login: setAuthToken } = useAuth();
+  const loginStore = useAuthStore();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export function RegisterPage() {
 
     try {
       const response = await register({ email, password });
-      setAuthToken(response.token);
+      loginStore.login(response.token);
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Failed to register");

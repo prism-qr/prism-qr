@@ -10,6 +10,7 @@ import { IntegrationsSection } from "@/components/index/IntegrationsSection";
 import { ReviewsSection } from "@/components/index/ReviewsSection";
 import { QRCodeSVG } from "qrcode.react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Home() {
   const [qrValue, setQrValue] = useState("https://prism-qr.dev");
@@ -36,7 +37,7 @@ export default function Home() {
       <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black">
 
         <motion.div
-          className="relative z-10 mt-20 w-full max-w-7xl mx-auto px-6 py-12 sm:px-8 md:px-12 lg:px-16"
+          className="relative z-10 mt-0 md:mt-20 w-full max-w-7xl mx-auto px-6 py-12 sm:px-8 md:px-12 lg:px-16"
           initial={{ opacity: 0, y: 100, scale: 0.5 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
@@ -128,12 +129,12 @@ export default function Home() {
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
 
-            <a
-              href="/auth/login"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-8 py-3 font-semibold text-white transition-all hover:border-neutral-600 hover:bg-neutral-800/70"
-            >
-              <span>Sign in</span>
-            </a>
+                  <Link
+                    href="/auth/login"
+                    className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-8 py-3 font-semibold text-white transition-all hover:border-neutral-600 hover:bg-neutral-800/70"
+                  >
+                    <span>Sign in</span>
+                  </Link>
           </motion.div>
         </motion.div>
 

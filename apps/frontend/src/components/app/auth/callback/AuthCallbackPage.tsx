@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthStore } from "@/lib/store/auth-store";
 import { loginWithGoogle } from "@/lib/auth";
 
 export function AuthCallbackPage() {
   const router = useRouter();
-  const { login: setAuthToken } = useAuth();
+  const loginStore = useAuthStore();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +36,7 @@ export function AuthCallbackPage() {
           termsAccepted: true,
           emailAccepted: true,
         });
-        setAuthToken(response.token);
+        loginStore.login(response.token);
         router.push("/dashboard");
       } catch (err: any) {
         setError(err.message || "Failed to authenticate");
@@ -46,7 +46,7 @@ export function AuthCallbackPage() {
     };
 
     handleGoogleAuth();
-  }, [router, setAuthToken]);
+  }, [router, loginStore]);
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-6">
