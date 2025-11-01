@@ -7,6 +7,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthCoreModule } from './auth/core/auth-core.module';
 import { RelayModule } from './relay/relay.module';
 import { ApiKeyCoreModule } from './api-key/core/api-key-core.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ApiKeyCoreModule } from './api-key/core/api-key-core.module';
     UserCoreModule,
     RelayModule,
     ApiKeyCoreModule,
+    HealthModule
   ],
   controllers: [],
   providers: [],
