@@ -266,21 +266,24 @@ export function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black px-4 py-8 sm:px-6 sm:py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 sm:mb-12">
+      <div className="min-h-screen bg-black px-4 py-8 sm:px-6 sm:py-12 flex flex-col">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="flex flex-row items-center justify-between gap-4 mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-white">
               Dashboard
             </h1>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all w-full sm:w-auto flex items-center justify-center"
+              className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all w-auto flex items-center justify-center flex-shrink-0"
               title="Logout"
             >
               <LogOut className="h-5 w-5" />
             </button>
           </div>
+          </div>
 
+        <div className="flex-1 flex items-center">
+          <div className="max-w-6xl mx-auto w-full">
           <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start justify-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -431,7 +434,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col justify-center md:justify-start w-full md:w-auto md:flex-shrink-0 gap-4"
+              className="flex flex-col justify-center md:justify-start w-full md:w-auto md:flex-shrink-0 gap-4 md:mt-[40px] items-center md:items-start"
             >
               <div className="relative rounded-2xl border border-neutral-800/80 p-4 md:p-6 lg:p-8 w-full md:w-auto md:min-w-[280px] max-w-[320px]">
                 <GlowingEffect
@@ -459,6 +462,7 @@ export function DashboardPage() {
                 <span>Download QR Code</span>
               </button>
             </motion.div>
+            </div>
           </div>
         </div>
       </div>
