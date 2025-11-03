@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+
+# Testing
+test
+coverage
+*.log
+
+# Development files
+.git
+.gitignore
+.env
+.env.local
+.env.*.local
+README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+Dockerfile
+Dockerfile.*
+.dockerignore
+
+# CI/CD
+.github

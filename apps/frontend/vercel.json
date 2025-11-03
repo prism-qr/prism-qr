@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/r/:slug",
+      "destination": "https://dev-api.prismqr.com/:slug"
+    }
+  ]
+}
