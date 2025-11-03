@@ -28,11 +28,16 @@ export class LinkVisitCoreService {
   }
 
   tryGetIpFromRequest(req: Request): string | undefined {
-    const ip = req.headers['x-forwarded-for'];
-    if (!ip) {
-      return;
+    const cloudflareIp = req.headers['cf-connecting-ip'];
+    if (cloudflareIp) {
+      return Array.isArray(cloudflareIp) ? cloudflareIp[0] : cloudflareIp;
     }
-    return ip;
+
+    const forwardedFor = req.headers['x-forwarded-for'];
+    if (forwardedFor) {
+      const ips = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
+      return ips.split(',')[0].trim();
+    }
   }
 
   async tryGetGeoLocationFromIp(
