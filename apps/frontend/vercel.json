@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/r/:slug",
-      "destination": "https://srv16.mikr.us:20231/api/:slug"
+      "destination": "https://dev-api.prismqr.com/:slug"
     }
   ]
 }
