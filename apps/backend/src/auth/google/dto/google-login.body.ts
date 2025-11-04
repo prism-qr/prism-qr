@@ -1,15 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class GoogleLoginBody {
   @ApiProperty()
   googleCode: string;
 
-  @ApiPropertyOptional()
-  termsAccepted?: boolean;
-
-  @ApiPropertyOptional()
-  emailAccepted?: boolean;
-
-  @ApiPropertyOptional()
+  @ApiProperty()
   forceLocalLogin?: boolean;
 }

@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { Public } from '../core/decorators/is-public.decorator';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GoogleAuthLoginService } from './google-auth-login.service';
 import { GoogleLoginBody } from './dto/google-login.body';
-import { TokenResponse } from 'src/shared/responses/token.response';
+import { TokenResponse } from '../../shared/responses/token.response';
+import { Public } from '../core/decorators/is-public.decorator';
 
 @Public()
 @Controller('auth/google')

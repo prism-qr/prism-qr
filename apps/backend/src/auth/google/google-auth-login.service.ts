@@ -1,12 +1,11 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { CustomJwtService } from '../custom-jwt/custom-jwt.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { TokenResponse } from '../../shared/responses/token.response';
+import { AuthMethod } from '../../user/core/enum/auth-method.enum';
 import { UserReadService } from '../../user/read/user-read.service';
 import { UserWriteService } from '../../user/write/user-write.service';
-import { AuthMethod } from '../../user/core/enum/auth-method.enum';
-import { AuthEventEmitter } from '../events/auth-event.emitter';
+import { CustomJwtService } from '../custom-jwt/custom-jwt.service';
 import { GoogleLoginBody } from './dto/google-login.body';
 import { GoogleAuthDataService } from './google-auth-data.service';
-import { TokenResponse } from 'src/shared/responses/token.response';
 
 @Injectable()
 export class GoogleAuthLoginService {
@@ -16,31 +15,28 @@ export class GoogleAuthLoginService {
     private readonly jwtService: CustomJwtService,
     private readonly userReadService: UserReadService,
     private readonly userWriteService: UserWriteService,
-    private readonly emitter: AuthEventEmitter,
     private readonly authGoogleDataService: GoogleAuthDataService,
   ) {}
 
   public async login(dto: GoogleLoginBody): Promise<TokenResponse> {
-    this.logger.log(`Logging user in... with dto: ${JSON.stringify(dto)}`);
+    this.logger.log(`Logging user in...`);
 
     const accessToken = await this.authGoogleDataService.getAccessToken(
       dto.googleCode,
       dto.forceLocalLogin,
     );
 
-    const { email, avatar } =
+    const { email } =
       await this.authGoogleDataService.getGoogleEmailAndAvatar(accessToken);
+
+    if (email.length === 0 || !email) {
+      this.logger.error('Email not found in google response');
+      throw Error('Email not found in google response');
+    }
 
     const user = await this.userReadService.readByEmail(email);
 
     this.logger.log(`After reading user by email`, { email, userId: user?.id });
-
-    if (!user && !dto.termsAccepted) {
-      this.logger.warn('Cannot create new account without accepting terms');
-      throw new BadRequestException(
-        'Cannot create new account without accepting terms',
-      );
-    }
 
     if (user === null) {
       const user = await this.userWriteService.create({
@@ -50,15 +46,9 @@ export class GoogleAuthLoginService {
 
       this.logger.log(`Created new user`, { email, userId: user.id });
 
-      this.emitter.emitUserRegisteredEvent({
-        authMethod: AuthMethod.Google,
-        email,
-        userId: user.id,
-        emailAccepted: dto.emailAccepted || false,
-      });
-
       return {
         token: await this.jwtService.sign({ id: user.id }),
+        isNewUser: true,
       };
     }
 
@@ -66,6 +56,7 @@ export class GoogleAuthLoginService {
 
     return {
       token: await this.jwtService.sign({ id: user.id }),
+      isNewUser: false,
     };
   }
 }
