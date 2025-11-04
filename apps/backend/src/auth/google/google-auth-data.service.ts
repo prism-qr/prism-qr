@@ -36,7 +36,9 @@ export class GoogleAuthDataService {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      this.logger.error(`Google token request failed: ${response.status}`, { errorBody });
+      this.logger.error(`Google token request failed: ${response.status}`, {
+        errorBody,
+      });
       throw new BadRequestException('Failed to authenticate with Google');
     }
 
