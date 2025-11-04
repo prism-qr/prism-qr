@@ -65,7 +65,7 @@ export function LoginPage() {
   const handleGoogleLogin = () => {
     const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
     const redirectUri = typeof window !== 'undefined' 
-      ? `${window.location.origin}/auth/callback`
+      ? `${window.location.origin}/auth/google/callback`
       : '';
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email profile&access_type=offline`;

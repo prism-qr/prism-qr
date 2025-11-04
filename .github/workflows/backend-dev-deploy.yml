@@ -72,8 +72,8 @@ jobs:
           auth-jwt-secret: ${{ secrets.BACKEND_DEV_AUTH_JWT_SECRET }}
           admin-secret-admin-key: ${{ secrets.BACKEND_DEV_ADMIN_SECRET_ADMIN_KEY }}
           internal-telegram-bot-token: ${{ secrets.BACKEND_DEV_INTERNAL_TELEGRAM_BOT_TOKEN }}
-          google-oauth-client-id: ${{ secrets.BACKEND_DEV_GOOGLE_OAUTH_CLIENT_ID }}
-          google-oauth-client-secret: ${{ secrets.BACKEND_DEV_GOOGLE_OAUTH_CLIENT_SECRET }}
+          google-client-id: ${{ secrets.BACKEND_DEV_GOOGLE_CLIENT_ID }}
+          google-client-secret: ${{ secrets.BACKEND_DEV_GOOGLE_CLIENT_SECRET }}
           better-stack-source-token: ${{ secrets.BACKEND_DEV_BETTER_STACK_SOURCE_TOKEN }}
           better-stack-source-endpoint: ${{ secrets.BACKEND_DEV_BETTER_STACK_SOURCE_ENDPOINT }}
 
