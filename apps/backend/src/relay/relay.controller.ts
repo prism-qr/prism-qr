@@ -4,7 +4,7 @@ import { LinkVisitCoreService } from 'src/link-visit/core/link-visit-core.servic
 import { LinkCoreService } from 'src/link/core/link-core.service';
 import { getEnvConfig } from 'src/shared/config/env-configs';
 
-@Controller()
+@Controller('r')
 export class RelayController {
   private readonly logger = new Logger(RelayController.name);
   constructor(
