@@ -23,7 +23,7 @@ describe('RelayController', () => {
 
       // when
       const response = await request(bootstrap.app.getHttpServer())
-        .get(`/${link.name}`)
+        .get(`/r/${link.name}`)
         .expect(302);
 
       // then
@@ -32,7 +32,7 @@ describe('RelayController', () => {
 
     it('returns landing page if link does not exist', async () => {
       const response = await request(bootstrap.app.getHttpServer())
-        .get('/xyz')
+        .get('/r/xyz')
         .expect(302);
       expect(response.headers.location).toBe('https://dev-api.prismqr.com');
     });
