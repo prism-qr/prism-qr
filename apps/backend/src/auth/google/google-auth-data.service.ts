@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { getEnvConfig } from 'src/shared/config/env-configs';
 
 @Injectable()
 export class GoogleAuthDataService {
+  private readonly logger = new Logger(GoogleAuthDataService.name);
+
   public async getAccessToken(
     code: string,
     forceLocalLogin?: boolean,
@@ -23,11 +25,21 @@ export class GoogleAuthDataService {
       }),
     });
 
+    if (!response.ok) {
+      this.logger.error(`Google token request failed: ${response.status}`);
+      throw new BadRequestException('Failed to authenticate with Google');
+    }
+
     const data = await response.json();
+
+    if (!data.access_token) {
+      this.logger.error('Access token not found in Google response');
+      throw new BadRequestException('Failed to authenticate with Google');
+    }
+
     return data.access_token;
   }
 
-  // TODO check version v3 vs v4
   public async getGoogleEmailAndAvatar(
     accessToken: string,
   ): Promise<{ email: string; avatar: string }> {
@@ -39,7 +51,21 @@ export class GoogleAuthDataService {
         },
       },
     );
+
+    if (!response.ok) {
+      this.logger.error(`Google userinfo request failed: ${response.status}`);
+      throw new BadRequestException(
+        'Failed to retrieve user information from Google',
+      );
+    }
+
     const user = await response.json();
+
+    if (!user.email) {
+      this.logger.error('Email not found in Google response');
+      throw new BadRequestException('Email not provided by Google');
+    }
+
     return { email: user.email, avatar: user.picture };
   }
 }

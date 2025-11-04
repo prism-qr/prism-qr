@@ -10,5 +10,6 @@ export class GoogleLoginBody {
   @ApiPropertyOptional()
   emailAccepted?: boolean;
 
+  @ApiPropertyOptional()
   forceLocalLogin?: boolean;
 }

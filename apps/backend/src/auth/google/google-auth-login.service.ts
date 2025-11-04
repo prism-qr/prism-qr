@@ -21,7 +21,7 @@ export class GoogleAuthLoginService {
   ) {}
 
   public async login(dto: GoogleLoginBody): Promise<TokenResponse> {
-    this.logger.log(`Logging user in...`);
+    this.logger.log(`Logging user in... with dto: ${JSON.stringify(dto)}`);
 
     const accessToken = await this.authGoogleDataService.getAccessToken(
       dto.googleCode,
@@ -30,11 +30,6 @@ export class GoogleAuthLoginService {
 
     const { email, avatar } =
       await this.authGoogleDataService.getGoogleEmailAndAvatar(accessToken);
-
-    if (!email || email.length === 0) {
-      this.logger.error('Email not found in google response');
-      throw Error('Email not found in google response');
-    }
 
     const user = await this.userReadService.readByEmail(email);
 
