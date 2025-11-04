@@ -37,6 +37,7 @@ export class AuthTraditionalService {
 
     return {
       token,
+      isNewUser: true,
     };
   }
 
@@ -64,7 +65,7 @@ export class AuthTraditionalService {
 
     this.emitter.emitUserLoggedInEvent({ userId: user.id });
 
-    return { token };
+    return { token, isNewUser: false };
   }
 
   private async passwordMatchesHash(
