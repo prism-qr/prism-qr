@@ -75,7 +75,7 @@ export function DashboardPage() {
 
   const getQrCodeUrl = () => {
     const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "https://devprismqr.bieda.it";
+      process.env.NEXT_PUBLIC_API_URL!;
     const baseUrl = apiUrl.replace("/api", "").replace(":3000", "");
     if (qrLink) {
       return `${baseUrl}/${qrLink.name}`;

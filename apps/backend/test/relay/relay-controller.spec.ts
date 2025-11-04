@@ -34,7 +34,7 @@ describe('RelayController', () => {
       const response = await request(bootstrap.app.getHttpServer())
         .get('/xyz')
         .expect(302);
-      expect(response.headers.location).toBe('https://devprismqr.bieda.it');
+      expect(response.headers.location).toBe('https://dev-api.prismqr.com');
     });
   });
 });

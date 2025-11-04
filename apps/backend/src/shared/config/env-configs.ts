@@ -38,7 +38,7 @@ export const EnvConfigs: EnvConfigs = {
       chatId: '-1002637928179',
     },
     internal: {
-      backendUrl: 'https://prodprismqr.bieda.it',
+      backendUrl: 'https://api.prismqr.com',
       frontendUrl: 'https://prismqr.com',
     },
     google: {
@@ -58,7 +58,7 @@ export const EnvConfigs: EnvConfigs = {
   },
   [OurEnv.Dev]: {
     internal: {
-      backendUrl: 'https://devprismqr.bieda.it',
+      backendUrl: 'https://dev-api.prismqr.com',
       frontendUrl: 'https://dev.prismqr.com',
     },
     telegram: {
