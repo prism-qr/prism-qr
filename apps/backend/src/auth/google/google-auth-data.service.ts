@@ -25,7 +25,20 @@ export class GoogleAuthDataService {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Failed to get Google access token: ${response.status} - ${JSON.stringify(errorData)}`,
+      );
+    }
+
     const data = await response.json();
+
+    if (!data.access_token) {
+      throw new Error(
+        `Access token not found in Google response: ${JSON.stringify(data)}`,
+      );
+    }
 
     return data.access_token;
   }
@@ -41,7 +54,22 @@ export class GoogleAuthDataService {
         },
       },
     );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `Failed to get Google user info: ${response.status} - ${JSON.stringify(errorData)}`,
+      );
+    }
+
     const user = await response.json();
+
+    if (!user.email) {
+      throw new Error(
+        `Email not found in Google user info: ${JSON.stringify(user)}`,
+      );
+    }
+
     return { email: user.email, avatar: user.picture };
   }
 }

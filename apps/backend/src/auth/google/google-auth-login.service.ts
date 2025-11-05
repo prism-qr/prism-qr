@@ -29,7 +29,7 @@ export class GoogleAuthLoginService {
     const { email } =
       await this.authGoogleDataService.getGoogleEmailAndAvatar(accessToken);
 
-    if (email.length === 0 || !email) {
+    if (!email || email.length === 0) {
       this.logger.error('Email not found in google response');
       throw Error('Email not found in google response');
     }
