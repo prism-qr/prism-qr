@@ -9,20 +9,22 @@ export class GoogleAuthDataService {
   ): Promise<string> {
     const config = getEnvConfig().google;
 
+    const body = new URLSearchParams({
+      client_id: config.clientId,
+      client_secret: config.clientSecret,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: forceLocalLogin
+        ? config.redirectUriAlternative!
+        : config.redirectUri,
+    });
+
     const response = await fetch('https://www.googleapis.com/oauth2/v4/token', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-        code: decodeURIComponent(code),
-        grant_type: 'authorization_code',
-        redirect_uri: forceLocalLogin
-          ? config.redirectUriAlternative!
-          : config.redirectUri,
-      }),
+      body,
     });
 
     if (!response.ok) {
