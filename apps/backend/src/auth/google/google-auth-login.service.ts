@@ -19,7 +19,7 @@ export class GoogleAuthLoginService {
   ) {}
 
   public async login(dto: GoogleLoginBody): Promise<TokenResponse> {
-    this.logger.log(`Logging user in...`);
+    this.logger.log(`Logging user in...`, { dto });
 
     const accessToken = await this.authGoogleDataService.getAccessToken(
       dto.googleCode,
