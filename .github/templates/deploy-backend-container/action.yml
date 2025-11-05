@@ -43,6 +43,16 @@ inputs:
   google-client-secret:
     required: true
 
+  better-stack-source-token:
+    required: false
+  better-stack-source-endpoint:
+    required: false
+
+  mail-user:
+    required: true
+  mail-password:
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -70,4 +80,6 @@ runs:
           -e GOOGLE_CLIENT_SECRET=${{ inputs.google-client-secret }} \
           -e BETTER_STACK_SOURCE_TOKEN=${{ inputs.better-stack-source-token }} \
           -e BETTER_STACK_SOURCE_ENDPOINT=${{ inputs.better-stack-source-endpoint }} \
+          -e MAIL_USER=${{ inputs.mail-user }} \
+          -e MAIL_PASSWORD=${{ inputs.mail-password }} \
           ${{ inputs.image-name }}

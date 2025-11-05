@@ -14,6 +14,10 @@ interface EnvConfig {
   mongo: {
     uri: string;
   };
+  mail: {
+    user: string;
+    password: string;
+  };
   auth: {
     jwtSecret: string;
   };
@@ -49,6 +53,10 @@ export const EnvConfigs: EnvConfigs = {
     mongo: {
       uri: process.env.MONGO_URI!,
     },
+    mail: {
+      user: process.env.MAIL_USER!,
+      password: process.env.MAIL_PASSWORD!,
+    },
     auth: {
       jwtSecret: process.env.AUTH_JWT_SECRET!,
     },
@@ -74,10 +82,13 @@ export const EnvConfigs: EnvConfigs = {
     mongo: {
       uri: process.env.MONGO_URI!,
     },
+    mail: {
+      user: process.env.MAIL_USER!,
+      password: process.env.MAIL_PASSWORD!,
+    },
     auth: {
       jwtSecret: process.env.AUTH_JWT_SECRET!,
     },
-
     admin: {
       secretAdminKey: process.env.ADMIN_SECRET_ADMIN_KEY!,
     },

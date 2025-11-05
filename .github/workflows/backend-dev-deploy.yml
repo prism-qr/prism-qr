@@ -76,6 +76,8 @@ jobs:
           google-client-secret: ${{ secrets.BACKEND_DEV_GOOGLE_CLIENT_SECRET }}
           better-stack-source-token: ${{ secrets.BACKEND_DEV_BETTER_STACK_SOURCE_TOKEN }}
           better-stack-source-endpoint: ${{ secrets.BACKEND_DEV_BETTER_STACK_SOURCE_ENDPOINT }}
+          mail-user: ${{ secrets.BACKEND_DEV_MAIL_USER }}
+          mail-password: ${{ secrets.BACKEND_DEV_MAIL_PASSWORD }}
 
       - name: Prune
         uses: "./.github/templates/prune"

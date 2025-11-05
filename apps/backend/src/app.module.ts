@@ -13,6 +13,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { LogtailTransport } from '@logtail/winston';
 import { Logtail } from '@logtail/node';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
   endpoint: process.env.BETTER_STACK_SOURCE_ENDPOINT!,
@@ -39,6 +40,20 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
     }),
     MongooseModule.forRoot(getEnvConfig().mongo.uri, { dbName: 'default' }),
     EventEmitterModule.forRoot(),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.example.com',
+        port: 587,
+        secure: false, // upgrade later with STARTTLS
+        auth: {
+          user: getEnvConfig().mail.user,
+          pass: getEnvConfig().mail.password,
+        },
+      },
+      defaults: {
+        from: '"Prism QR" <noreply@prismqr.com>',
+      },
+    }),
     LinkCoreModule,
     LinkVisitCoreModule,
     AuthCoreModule,
