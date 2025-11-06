@@ -6,6 +6,7 @@ import { LinkCoreService } from './link-core.service';
 import { UserReadModule } from 'src/user/read/user-read.module';
 import { ApiKeyAuthModule } from 'src/auth/api-key/api-key-auth.module';
 import { AuthCoreModule } from 'src/auth/core/auth-core.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthCoreModule } from 'src/auth/core/auth-core.module';
     UserReadModule,
     ApiKeyAuthModule,
     AuthCoreModule,
+    CacheModule.register({ ttl: 60000 }),
   ],
 
   controllers: [LinkCoreController],

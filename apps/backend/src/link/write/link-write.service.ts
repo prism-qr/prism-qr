@@ -1,6 +1,7 @@
 import { Model, Types, UpdateQuery } from 'mongoose';
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,10 +10,12 @@ import { LinkEntity } from '../core/entities/link.entity';
 import { ILink } from '../core/entities/link.interface';
 import { CreateLinkDto } from './dto/create-link.dto';
 import { UpdateLinkDto } from './dto/update-link.dto';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class LinkWriteService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectModel(LinkEntity.name) private linkModel: Model<LinkEntity>,
   ) {}
 
@@ -35,7 +38,7 @@ export class LinkWriteService {
   }
 
   public async update(linkId: string, destination: string): Promise<ILink> {
-    const updateQuery = this.constructUpdateQuery({destination});
+    const updateQuery = this.constructUpdateQuery({ destination });
 
     const updatedLink = await this.linkModel.findOneAndUpdate(
       { _id: new Types.ObjectId(linkId) },
@@ -45,6 +48,9 @@ export class LinkWriteService {
     if (!updatedLink) {
       throw new NotFoundException('Link not found');
     }
+
+    await this.cacheManager.del(`link:${updatedLink.name}`);
+
     return LinkEntity.mapToInterface(updatedLink.toObject());
   }
 

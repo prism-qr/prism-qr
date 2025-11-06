@@ -3,12 +3,15 @@ import axios from 'axios';
 import { LinkVisitWriteService } from '../write/link-visit-write.service';
 import { IpApiResponse } from './types/ip-api-response';
 import { CreateLinkVisitParams } from './types/create-link-visit-params';
+import { OnEvent } from '@nestjs/event-emitter';
+import { LinkEvents } from 'src/relay/events/link-events.enum';
+import { LinkVisitedEvent } from 'src/relay/events/link-visited.event';
 
 @Injectable()
 export class LinkVisitCoreService {
   private readonly logger = new Logger(LinkVisitCoreService.name);
 
-  constructor(private readonly linkVisitWriteService: LinkVisitWriteService) {}
+  constructor() {}
 
   tryGetLanguageHeaderFromRequest(req: Request): string | undefined {
     const languageHeader = req.headers['accept-language'];
@@ -66,15 +69,16 @@ export class LinkVisitCoreService {
     }
   }
 
-  async logVisitDetails(linkId: string, req: Request): Promise<void> {
-    const languageHeader = this.tryGetLanguageHeaderFromRequest(req);
-    const referrer = this.tryGetReferrerFromRequest(req);
+  @OnEvent(LinkEvents.LinkVisitedEvent)
+  async logVisitDetails(payload: LinkVisitedEvent): Promise<void> {
+    const languageHeader = this.tryGetLanguageHeaderFromRequest(payload.req);
+    const referrer = this.tryGetReferrerFromRequest(payload.req);
 
-    const ip = this.tryGetIpFromRequest(req);
+    const ip = this.tryGetIpFromRequest(payload.req);
     const geoLocation = await this.tryGetGeoLocationFromIp(ip);
 
     const params: CreateLinkVisitParams = {
-      linkId: linkId,
+      linkName: payload.name,
       referrer: referrer,
       languageHeader: languageHeader,
       ip: ip,

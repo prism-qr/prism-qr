@@ -1,5 +1,5 @@
 export interface CreateLinkVisitParams {
-  linkId: string;
+  linkName: string;
   referrer?: string;
   languageHeader?: string;
   ip?: string;
@@ -8,4 +8,4 @@ export interface CreateLinkVisitParams {
   city?: string;
   lat?: number;
   lon?: number;
-};
+}

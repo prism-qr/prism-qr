@@ -8,5 +8,4 @@ import { LinkVisitReadModule } from '../read/link-visit-read.module';
   providers: [LinkVisitCoreService],
   exports: [LinkVisitCoreService],
 })
-
 export class LinkVisitCoreModule {}
