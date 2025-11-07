@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/r/:slug",
-      "destination": "${NEXT_PUBLIC_API_URL}/r/:slug"
-    }
-  ]
-}
