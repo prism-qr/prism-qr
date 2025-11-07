@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { useRouter } from "next/router";
 import { QRCodeSVG } from "qrcode.react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { RefreshCw, ExternalLink, Check, LogOut, Copy, Key, Eye, EyeOff, Download } from "lucide-react";
+import { RefreshCw, ExternalLink, Check, LogOut, Key, Download, AlertTriangle } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Link, getLinks, createLink, updateLink, getApiKey } from "@/lib/api/links";
 
@@ -24,11 +24,9 @@ export function DashboardPage() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [apiKey, setApiKey] = useState<string>("");
   const [apiKeyLoading, setApiKeyLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showApiKey, setShowApiKey] = useState(false);
+  const [newApiKeyGenerated, setNewApiKeyGenerated] = useState(false);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const checkmarkTimer = useRef<NodeJS.Timeout | null>(null);
-  const copyTimer = useRef<NodeJS.Timeout | null>(null);
   const qrLinkRef = useRef<Link | null>(null);
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,13 +47,6 @@ export function DashboardPage() {
           qrLinkRef.current = mostRecentLink;
           setDestinationUrl(mostRecentLink.destination);
           
-          if (typeof window !== 'undefined') {
-            const storedApiKey = localStorage.getItem(`apiKey_${mostRecentLink.id}`);
-            if (storedApiKey) {
-              setApiKey(storedApiKey);
-              setShowApiKey(false);
-            }
-          }
         }
       } catch (err) {
         console.error("Failed to fetch user links:", err);
@@ -191,47 +182,23 @@ export function DashboardPage() {
 
     setApiKeyLoading(true);
     setError("");
+    setNewApiKeyGenerated(false);
 
     try {
       const response = await getApiKey(qrLink.id);
       setApiKey(response.apiKey);
-      setShowApiKey(true);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(`apiKey_${qrLink.id}`, response.apiKey);
-      }
+      setNewApiKeyGenerated(true);
     } catch (err: any) {
-      setError(err.message || "Failed to generate API key");
+      if (err.message && err.message.includes("Maximum limit reached")) {
+        setError("Cannot create more API keys. Maximum limit of 5 keys reached.");
+      } else {
+        setError(err.message || "Failed to generate API key");
+      }
     } finally {
       setApiKeyLoading(false);
     }
   };
 
-  const maskApiKey = (key: string) => {
-    if (!key) return "";
-    if (key.length <= 18) return "•".repeat(key.length);
-    const prefix = key.substring(0, 18);
-    return `${prefix}${"•".repeat(Math.max(key.length - 18, 12))}`;
-  };
-
-  const handleCopyApiKey = () => {
-    if (!apiKey) return;
-    navigator.clipboard.writeText(apiKey);
-    setCopied(true);
-    if (copyTimer.current) {
-      clearTimeout(copyTimer.current);
-    }
-    copyTimer.current = setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (copyTimer.current) {
-        clearTimeout(copyTimer.current);
-      }
-    };
-  }, []);
 
   const handleDownloadQR = () => {
     if (!qrCodeRef.current) return;
@@ -379,41 +346,34 @@ export function DashboardPage() {
                     <span>{apiKeyLoading ? "Generating..." : "Generate"}</span>
                   </button>
                 </div>
-                {apiKey && (
-                  <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
-                    <GlowingEffect
-                      spread={40}
-                      glow={true}
-                      disabled={false}
-                      proximity={64}
-                      inactiveZone={0.01}
-                    />
-                    <div className="relative flex items-center gap-2">
-                      <div className="relative flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-neutral-300 text-sm sm:text-base font-mono truncate select-all">
-                        {showApiKey ? apiKey : maskApiKey(apiKey)}
+                {newApiKeyGenerated && apiKey && (
+                  <div className="space-y-3">
+                    <div className="relative rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-3 md:rounded-3xl md:p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-yellow-400 text-sm font-semibold mb-1">
+                            Save this API key now
+                          </p>
+                          <p className="text-yellow-500/80 text-xs">
+                            You can only view this key once. Make sure to copy it before closing this page. Maximum of 5 API keys per link.
+                          </p>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => setShowApiKey(!showApiKey)}
-                        className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white px-4 py-3.5 font-semibold transition-all hover:bg-neutral-800/50 flex-shrink-0"
-                        title={showApiKey ? "Hide API key" : "Show API key"}
-                      >
-                        {showApiKey ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                      <button
-                        onClick={handleCopyApiKey}
-                        className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white px-4 py-3.5 font-semibold transition-all hover:bg-neutral-800/50 flex-shrink-0"
-                        title="Copy API key"
-                      >
-                        {copied ? (
-                          <Check className="h-4 w-4 text-green-400" />
-                        ) : (
-                          <Copy className="h-4 w-4 transition-transform group-hover:scale-110" />
-                        )}
-                      </button>
+                    </div>
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
+                      <GlowingEffect
+                        spread={40}
+                        glow={true}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
+                      />
+                      <div className="relative">
+                        <div className="px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-white text-sm sm:text-base font-mono break-all select-all">
+                          {apiKey}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

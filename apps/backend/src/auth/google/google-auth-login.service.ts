@@ -19,44 +19,49 @@ export class GoogleAuthLoginService {
   ) {}
 
   public async login(dto: GoogleLoginBody): Promise<TokenResponse> {
-    this.logger.log(`Logging user in...${JSON.stringify(dto)}`);
+    try {
+      this.logger.log(`Logging user in...${JSON.stringify(dto)}`);
 
-    const accessToken = await this.authGoogleDataService.getAccessToken(
-      dto.googleCode,
-      dto.forceLocalLogin,
-    );
+      const accessToken = await this.authGoogleDataService.getAccessToken(
+        dto.googleCode,
+        dto.forceLocalLogin,
+      );
 
-    const { email } =
-      await this.authGoogleDataService.getGoogleEmailAndAvatar(accessToken);
+      const { email } =
+        await this.authGoogleDataService.getGoogleEmailAndAvatar(accessToken);
 
-    if (!email || email.length === 0) {
-      this.logger.error('Email not found in google response');
-      throw Error('Email not found in google response');
-    }
+      if (!email || email.length === 0) {
+        this.logger.error('Email not found in google response');
+        throw new Error('Email not found in google response');
+      }
 
-    const user = await this.userReadService.readByEmail(email);
+      const user = await this.userReadService.readByEmail(email);
 
-    this.logger.log(`After reading user by email`, { email, userId: user?.id });
+      this.logger.log(`After reading user by email`, { email, userId: user?.id });
 
-    if (user === null) {
-      const user = await this.userWriteService.create({
-        authMethod: AuthMethod.Google,
-        email,
-      });
+      if (user === null) {
+        const newUser = await this.userWriteService.create({
+          authMethod: AuthMethod.Google,
+          email,
+        });
 
-      this.logger.log(`Created new user`, { email, userId: user.id });
+        this.logger.log(`Created new user`, { email, userId: newUser.id });
+
+        return {
+          token: await this.jwtService.sign({ id: newUser.id }),
+          isNewUser: true,
+        };
+      }
+
+      this.logger.log(`Logged in existing user`, { email, userId: user.id });
 
       return {
         token: await this.jwtService.sign({ id: user.id }),
-        isNewUser: true,
+        isNewUser: false,
       };
+    } catch (error) {
+      this.logger.error(`Google login error: ${error.message}`, error.stack);
+      throw error;
     }
-
-    this.logger.log(`Logged in existing user`, { email, userId: user.id });
-
-    return {
-      token: await this.jwtService.sign({ id: user.id }),
-      isNewUser: false,
-    };
   }
 }

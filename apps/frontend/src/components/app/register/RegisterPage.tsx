@@ -75,10 +75,24 @@ export function RegisterPage() {
   };
 
   const handleGoogleLogin = () => {
-    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
-    const redirectUri = typeof window !== 'undefined' 
-      ? `${window.location.origin}/auth/google/callback`
-      : '';
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    
+    if (!googleClientId) {
+      setError("Google authentication is not configured. Please contact support.");
+      return;
+    }
+    
+    const redirectUri = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || 
+      (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:3000/auth/google/callback'
+        : typeof window !== 'undefined' 
+          ? `${window.location.origin}/auth/google/callback`
+          : 'http://localhost:3000/auth/google/callback');
+    
+    if (!redirectUri) {
+      setError("Unable to determine redirect URI");
+      return;
+    }
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email profile&access_type=offline`;
     

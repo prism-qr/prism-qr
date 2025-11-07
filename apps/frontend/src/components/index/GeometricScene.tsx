@@ -24,8 +24,24 @@ export function GeometricScene() {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
 
+    const getResponsiveScale = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth < 640) return 0.5;
+      if (windowWidth < 768) return 0.6;
+      if (windowWidth < 1024) return 0.8;
+      if (windowWidth < 1280) return 0.9;
+      return 1.0;
+    };
+
+    const getCameraZ = () => {
+      const windowWidth = window.innerWidth;
+      if (windowWidth < 640) return 6;
+      if (windowWidth < 768) return 7;
+      return 8;
+    };
+
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-    camera.position.z = 8;
+    camera.position.z = getCameraZ();
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
@@ -160,13 +176,24 @@ export function GeometricScene() {
       });
     };
 
+    const getBasePositions = (scale: number) => [
+      [0, 0, 0],
+      [-3 * scale, 1.5 * scale, -1.5 * scale],
+      [3 * scale, -1.5 * scale, 1.5 * scale],
+      [-2 * scale, -2 * scale, 1.5 * scale],
+      [2.5 * scale, 1.5 * scale, -2 * scale],
+      [-3.5 * scale, 0, 0.5 * scale],
+    ];
+
+    const positionScale = getResponsiveScale();
+    
     const shapes = [
-      { geometry: new THREE.IcosahedronGeometry(1.04, 0), material: createRainbowMaterial(), position: [0, 0, 0] },
-      { geometry: new THREE.BoxGeometry(0.78, 1.2, 0.6), material: createRainbowMaterial(), position: [-3, 1.5, -1.5] },
-      { geometry: new THREE.TetrahedronGeometry(0.65, 0), material: createRainbowMaterial(), position: [3, -1.5, 1.5] },
-      { geometry: new THREE.BoxGeometry(0.78, 0.78, 0.78), material: createRainbowMaterial(), position: [-2, -2, 1.5] },
-      { geometry: new THREE.TorusGeometry(0.52, 0.195, 16, 32), material: createRainbowMaterial(), position: [2.5, 1.5, -2] },
-      { geometry: new THREE.OctahedronGeometry(0.65, 0), material: createRainbowMaterial(), position: [-3.5, 0, 0.5] },
+      { geometry: new THREE.IcosahedronGeometry(1.04, 0), material: createRainbowMaterial(), position: getBasePositions(positionScale)[0] },
+      { geometry: new THREE.BoxGeometry(0.78, 1.2, 0.6), material: createRainbowMaterial(), position: getBasePositions(positionScale)[1] },
+      { geometry: new THREE.TetrahedronGeometry(0.65, 0), material: createRainbowMaterial(), position: getBasePositions(positionScale)[2] },
+      { geometry: new THREE.BoxGeometry(0.78, 0.78, 0.78), material: createRainbowMaterial(), position: getBasePositions(positionScale)[3] },
+      { geometry: new THREE.TorusGeometry(0.52, 0.195, 16, 32), material: createRainbowMaterial(), position: getBasePositions(positionScale)[4] },
+      { geometry: new THREE.OctahedronGeometry(0.65, 0), material: createRainbowMaterial(), position: getBasePositions(positionScale)[5] },
     ];
 
     const glowMeshes: THREE.Mesh[] = [];
@@ -254,13 +281,24 @@ export function GeometricScene() {
 
     let time = 0;
     const targetPositions = meshes.map(() => ({ x: 0, y: 0, z: 0 }));
-    const originalPositions = shapes.map((shape) => ({
+    let originalPositions = shapes.map((shape) => ({
       x: shape.position[0],
       y: shape.position[1],
       z: shape.position[2],
     }));
     const hoverStartTimes = meshes.map(() => -1);
     const hoverDelay = 200;
+
+    const updatePositions = () => {
+      const newScale = getResponsiveScale();
+      const newBasePositions = getBasePositions(newScale);
+      originalPositions = newBasePositions.map((pos) => ({
+        x: pos[0],
+        y: pos[1],
+        z: pos[2],
+      }));
+      camera.position.z = getCameraZ();
+    };
 
     const animate = () => {
       time += 0.005;
@@ -345,6 +383,7 @@ export function GeometricScene() {
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
+      updatePositions();
     };
 
     window.addEventListener("resize", handleResize);

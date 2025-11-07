@@ -2,6 +2,7 @@ import { apiRequest } from './api';
 
 export interface TokenResponse {
   token: string;
+  isNewUser?: boolean;
 }
 
 export interface LoginCredentials {

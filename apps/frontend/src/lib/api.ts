@@ -18,8 +18,17 @@ export async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || 'Request failed');
+    let errorData: any;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = { message: `Request failed with status ${response.status}` };
+    }
+    
+    const error = new Error(errorData.message || errorData.error || 'Request failed');
+    (error as any).status = response.status;
+    (error as any).data = errorData;
+    throw error;
   }
 
   return response.json();
