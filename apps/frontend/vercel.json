@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/r/:slug",
-      "destination": "https://dev-api.prismqr.com/:slug"
+      "destination": "${NEXT_PUBLIC_API_URL}/r/:slug"
     }
   ]
 }
