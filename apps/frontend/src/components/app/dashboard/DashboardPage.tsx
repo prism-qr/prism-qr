@@ -11,9 +11,7 @@ import {
   ExternalLink,
   Check,
   LogOut,
-  Key,
   Download,
-  AlertTriangle,
   Plus,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -22,9 +20,9 @@ import {
   getLinks,
   createLink,
   updateLink,
-  getApiKey,
   generateRandomLinkName,
 } from "@/lib/api/links";
+import { ApiKeyManagement } from "./ApiKeyManagement";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -38,9 +36,6 @@ export function DashboardPage() {
   const [inputKey, setInputKey] = useState(0);
   const [showCheckmark, setShowCheckmark] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [apiKey, setApiKey] = useState<string>("");
-  const [apiKeyLoading, setApiKeyLoading] = useState(false);
-  const [newApiKeyGenerated, setNewApiKeyGenerated] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const checkmarkTimer = useRef<NodeJS.Timeout | null>(null);
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
@@ -76,8 +71,6 @@ export function DashboardPage() {
   useEffect(() => {
     if (selectedLink) {
       setDestinationUrl(selectedLink.destination);
-      setApiKey("");
-      setNewApiKeyGenerated(false);
     }
   }, [selectedLinkId]);
 
@@ -161,30 +154,6 @@ export function DashboardPage() {
   const truncateUrl = (url: string, maxLength: number = 50) => {
     if (url.length <= maxLength) return url;
     return url.substring(0, maxLength) + "...";
-  };
-
-  const handleGenerateApiKey = async () => {
-    if (!selectedLinkId) return;
-
-    setApiKeyLoading(true);
-    setError("");
-    setNewApiKeyGenerated(false);
-
-    try {
-      const response = await getApiKey(selectedLinkId);
-      setApiKey(response.apiKey);
-      setNewApiKeyGenerated(true);
-    } catch (err: any) {
-      if (err.message && err.message.includes("Maximum limit reached")) {
-        setError(
-          "Cannot create more API keys. Maximum limit of 5 keys reached."
-        );
-      } else {
-        setError(err.message || "Failed to generate API key");
-      }
-    } finally {
-      setApiKeyLoading(false);
-    }
   };
 
   const handleDownloadQR = () => {
@@ -382,56 +351,7 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
-                        API Key
-                      </label>
-                      <button
-                        onClick={handleGenerateApiKey}
-                        disabled={!selectedLinkId || apiKeyLoading}
-                        className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white px-4 py-2 font-semibold transition-all hover:bg-neutral-800/50 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
-                      >
-                        <Key className="h-4 w-4" />
-                        <span>
-                          {apiKeyLoading ? "Generating..." : "Generate"}
-                        </span>
-                      </button>
-                    </div>
-                    {newApiKeyGenerated && apiKey && (
-                      <div className="space-y-3">
-                        <div className="relative rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-3 md:rounded-3xl md:p-4">
-                          <div className="flex items-start gap-3">
-                            <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-yellow-400 text-sm font-semibold mb-1">
-                                Save this API key now
-                              </p>
-                              <p className="text-yellow-500/80 text-xs">
-                                You can only view this key once. Make sure to
-                                copy it before closing this page. Maximum of 5
-                                API keys per link.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
-                          <GlowingEffect
-                            spread={40}
-                            glow={true}
-                            disabled={false}
-                            proximity={64}
-                            inactiveZone={0.01}
-                          />
-                          <div className="relative">
-                            <div className="px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-white text-sm sm:text-base font-mono break-all select-all">
-                              {apiKey}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <ApiKeyManagement linkId={selectedLink.id} />
 
                   {error && (
                     <motion.div

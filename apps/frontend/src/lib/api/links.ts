@@ -7,6 +7,14 @@ export interface Link {
   destination: string;
 }
 
+export interface ApiKey {
+  id: string;
+  prefix: string;
+  linkId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export function generateRandomLinkName(length: number = 5): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
@@ -42,4 +50,20 @@ export async function updateLink(
 
 export async function getApiKey(linkId: string): Promise<{ apiKey: string }> {
   return apiRequest<{ apiKey: string }>(`/links/${linkId}/api_key`);
+}
+
+export async function listApiKeys(linkId: string): Promise<ApiKey[]> {
+  return apiRequest<ApiKey[]>(`/links/${linkId}/api_keys`);
+}
+
+export async function deleteApiKey(
+  linkId: string,
+  keyId: string
+): Promise<{ success: boolean }> {
+  return apiRequest<{ success: boolean }>(
+    `/links/${linkId}/api_keys/${keyId}`,
+    {
+      method: "DELETE",
+    }
+  );
 }

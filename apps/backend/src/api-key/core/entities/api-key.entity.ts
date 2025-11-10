@@ -20,8 +20,11 @@ export class ApiKeyEntity {
 
   public static mapToInterface(apiKey: ApiKeyEntity): IApiKey {
     return {
-      ...apiKey,
       id: apiKey._id.toString(),
+      prefix: apiKey.prefix,
+      linkId: apiKey.linkId,
+      createdAt: apiKey['createdAt'],
+      updatedAt: apiKey['updatedAt'],
     };
   }
 }
