@@ -13,6 +13,7 @@ import {
   LogOut,
   Download,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
@@ -20,11 +21,13 @@ import {
   getLinks,
   createLink,
   updateLink,
+  deleteLink,
   generateRandomLinkName,
 } from "@/lib/api/links";
 import { ApiKeyManagement } from "./ApiKeyManagement";
 import { UserInfoBox } from "./UserInfoBox";
 import { getCurrentUser, User } from "@/lib/api/user";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -43,6 +46,8 @@ export function DashboardPage() {
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
@@ -136,7 +141,42 @@ export function DashboardPage() {
     []
   );
 
+  const handleDeleteLink = async () => {
+    if (!linkToDelete) return;
 
+    setError("");
+
+    try {
+      await deleteLink(linkToDelete);
+      setLinks((prevLinks) => prevLinks.filter((link) => link.id !== linkToDelete));
+      
+      if (selectedLinkId === linkToDelete) {
+        const remainingLinks = links.filter((link) => link.id !== linkToDelete);
+        if (remainingLinks.length > 0) {
+          setSelectedLinkId(remainingLinks[0].id);
+          setDestinationUrl(remainingLinks[0].destination);
+        } else {
+          setSelectedLinkId(null);
+          setDestinationUrl("");
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to delete link");
+    } finally {
+      setDeleteConfirmOpen(false);
+      setLinkToDelete(null);
+    }
+  };
+
+  const openDeleteConfirmation = (linkId: string) => {
+    setLinkToDelete(linkId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setDeleteConfirmOpen(false);
+    setLinkToDelete(null);
+  };
 
   const handleRefresh = async () => {
     if (!destinationUrl.trim() || !selectedLinkId) return;
@@ -233,12 +273,11 @@ export function DashboardPage() {
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {links.map((link) => (
-                <motion.button
+                <motion.div
                   key={link.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  onClick={() => setSelectedLinkId(link.id)}
-                  className={`relative rounded-2xl border p-4 text-left transition-all ${
+                  className={`group relative rounded-2xl border p-4 transition-all ${
                     selectedLinkId === link.id
                       ? "border-white/30 bg-neutral-900/80"
                       : "border-neutral-800/80 bg-neutral-900/50 hover:border-neutral-700"
@@ -251,15 +290,28 @@ export function DashboardPage() {
                     proximity={64}
                     inactiveZone={0.01}
                   />
-                  <div className="relative">
+                  <button
+                    onClick={() => setSelectedLinkId(link.id)}
+                    className="relative w-full text-left"
+                  >
                     <div className="text-white font-semibold mb-1 font-mono">
                       {link.name}
                     </div>
                     <div className="text-neutral-400 text-sm truncate">
                       {truncateUrl(link.destination, 30)}
                     </div>
-                  </div>
-                </motion.button>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDeleteConfirmation(link.id);
+                    }}
+                    className="absolute top-3 right-3 p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all opacity-0 group-hover:opacity-100"
+                    title="Delete link"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </motion.div>
               ))}
 
               {links.length < 3 && (
@@ -424,6 +476,17 @@ export function DashboardPage() {
             </div>
           </div>
         )}
+
+        <ConfirmDialog
+          isOpen={deleteConfirmOpen}
+          title="Delete Link"
+          message="Are you sure you want to delete this link? This action cannot be undone. All associated API keys will also be deleted."
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          onConfirm={handleDeleteLink}
+          onCancel={closeDeleteConfirmation}
+          variant="danger"
+        />
       </div>
     </ProtectedRoute>
   );

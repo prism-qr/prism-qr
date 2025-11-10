@@ -48,6 +48,14 @@ export async function updateLink(
   });
 }
 
+export async function deleteLink(
+  linkId: string
+): Promise<{ success: boolean }> {
+  return apiRequest<{ success: boolean }>(`/links/${linkId}`, {
+    method: "DELETE",
+  });
+}
+
 export async function getApiKey(linkId: string): Promise<{ apiKey: string }> {
   return apiRequest<{ apiKey: string }>(`/links/${linkId}/api_key`);
 }

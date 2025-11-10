@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Key, Trash2, AlertTriangle, Copy, Check } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import {
   ApiKey,
   listApiKeys,
@@ -21,6 +22,8 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApiKeys();
@@ -56,14 +59,29 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
     }
   };
 
-  const handleDeleteApiKey = async (keyId: string) => {
+  const handleDeleteApiKey = async () => {
+    if (!keyToDelete) return;
+
     try {
-      await deleteApiKey(linkId, keyId);
+      await deleteApiKey(linkId, keyToDelete);
       await fetchApiKeys();
       setError("");
     } catch (err: any) {
       setError(err.message || "Failed to delete API key");
+    } finally {
+      setDeleteConfirmOpen(false);
+      setKeyToDelete(null);
     }
+  };
+
+  const openDeleteConfirmation = (keyId: string) => {
+    setKeyToDelete(keyId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const closeDeleteConfirmation = () => {
+    setDeleteConfirmOpen(false);
+    setKeyToDelete(null);
   };
 
   const handleCopyToClipboard = async (text: string, id: string) => {
@@ -198,7 +216,7 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleDeleteApiKey(key.id)}
+                    onClick={() => openDeleteConfirmation(key.id)}
                     className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 transition-all flex-shrink-0"
                     title="Delete API key"
                   >
@@ -229,6 +247,17 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
           {error}
         </motion.div>
       )}
+
+      <ConfirmDialog
+        isOpen={deleteConfirmOpen}
+        title="Delete API Key"
+        message="Are you sure you want to delete this API key? This action cannot be undone and any applications using this key will lose access."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleDeleteApiKey}
+        onCancel={closeDeleteConfirmation}
+        variant="danger"
+      />
     </div>
   );
 }
