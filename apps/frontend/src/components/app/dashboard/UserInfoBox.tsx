@@ -44,14 +44,14 @@ export function UserInfoBox({ user, loading }: UserInfoBoxProps) {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="px-4 py-2 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 flex items-center gap-3"
+      className="px-3 py-2 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 flex items-center gap-2 sm:gap-3 max-w-full"
     >
-      <UserIcon className="h-4 w-4 text-neutral-400" />
-      <div className="flex flex-col min-w-0">
-        <span className="text-sm text-white font-medium truncate">
+      <UserIcon className="h-4 w-4 text-neutral-400 flex-shrink-0" />
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="text-xs sm:text-sm text-white font-medium truncate">
           {user.email}
         </span>
-        <div className="flex items-center gap-2 text-xs text-neutral-400">
+        <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-400">
           <span className="flex items-center gap-1">
             <Shield className="h-3 w-3" />
             {getAuthMethodDisplay(user.authMethod)}

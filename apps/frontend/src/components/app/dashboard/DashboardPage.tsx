@@ -209,15 +209,17 @@ export function DashboardPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-black px-4 py-8 sm:px-6 sm:py-12 flex flex-col">
         <div className="max-w-6xl mx-auto w-full">
-          <div className="flex flex-row items-center justify-between gap-4 mb-8 sm:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-white">
               Dashboard
             </h1>
-            <div className="flex items-center gap-3">
-              <UserInfoBox user={currentUser} loading={userLoading} />
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <div className="flex-1 sm:flex-initial min-w-0">
+                <UserInfoBox user={currentUser} loading={userLoading} />
+              </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all w-auto flex items-center justify-center flex-shrink-0"
+                className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center flex-shrink-0"
                 title="Logout"
               >
                 <LogOut className="h-5 w-5" />
