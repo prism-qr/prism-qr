@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { getEnvConfig } from 'src/shared/config/env-configs';
 
 @Injectable()
 export class EmailConfirmationService {
+  private readonly logger = new Logger(EmailConfirmationService.name);
   constructor(private readonly mailerService: MailerService) {}
 
   public async sendConfirmationEmail(
@@ -12,10 +13,11 @@ export class EmailConfirmationService {
   ): Promise<void> {
     const confirmationUrl = `${getEnvConfig().internal.backendUrl}/auth/traditional/confirm-email?token=${token}`;
 
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Confirm your email - Prism QR',
-      html: `
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Confirm your email - Prism QR',
+        html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>Welcome to Prism QR!</h2>
           <p>Please confirm your email address by clicking the button below:</p>
@@ -32,6 +34,9 @@ export class EmailConfirmationService {
           </p>
         </div>
       `,
-    });
+      });
+    } catch (error) {
+      this.logger.error('Failed to send confirmation email', error);
+    }
   }
 }
