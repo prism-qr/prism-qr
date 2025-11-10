@@ -23,6 +23,8 @@ import {
   generateRandomLinkName,
 } from "@/lib/api/links";
 import { ApiKeyManagement } from "./ApiKeyManagement";
+import { UserInfoBox } from "./UserInfoBox";
+import { getCurrentUser, User } from "@/lib/api/user";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -39,12 +41,15 @@ export function DashboardPage() {
   const [isCreating, setIsCreating] = useState(false);
   const checkmarkTimer = useRef<NodeJS.Timeout | null>(null);
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
   useEffect(() => {
     setIsMounted(true);
     fetchUserLinks();
+    fetchUser();
 
     return () => {
       if (checkmarkTimer.current) {
@@ -52,6 +57,17 @@ export function DashboardPage() {
       }
     };
   }, []);
+
+  const fetchUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+    } catch (err) {
+      console.error("Failed to fetch user:", err);
+    } finally {
+      setUserLoading(false);
+    }
+  };
 
   const fetchUserLinks = async () => {
     try {
@@ -197,13 +213,16 @@ export function DashboardPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-white">
               Dashboard
             </h1>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all w-auto flex items-center justify-center flex-shrink-0"
-              title="Logout"
-            >
-              <LogOut className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-3">
+              <UserInfoBox user={currentUser} loading={userLoading} />
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all w-auto flex items-center justify-center flex-shrink-0"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           <div className="mb-8">
