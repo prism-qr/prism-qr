@@ -19,41 +19,41 @@ interface Solution {
 const painPoints: PainPoint[] = [
   {
     icon: Terminal,
-    title: '"Just copy-paste the API key"',
+    title: 'Printed 5,000 QR codes. Typo in the URL.',
     description:
-      "Slack DMs, email threads, and shared docs become your secret vault. Until someone screenshots it.",
+      "Static QR codes are permanent. One mistake means reprinting everything. Thousands of dollars down the drain.",
   },
   {
     icon: CloudUpload,
-    title: "Deploy → Update 47 places → Repeat",
+    title: "Which QR code is working? No idea.",
     description:
-      "Manually updating secrets across GitHub Actions, Vercel, AWS, and every other platform. Every. Single. Time.",
+      "You've placed codes everywhere - flyers, business cards, product packaging. But you have zero visibility into which ones are actually being scanned.",
   },
   {
     icon: Zap,
-    title: "$50,000 AWS bill surprise",
-    description: "That leaked API key just auto-scaled your nightmare.",
+    title: "Campaign ended, QR code didn't",
+    description: "Your promotion is over but those QR codes are still out there, pointing to an outdated landing page. Can't update them now.",
   },
 ];
 
 const solutions: Solution[] = [
   {
     icon: Lock,
-    title: "Share secrets like a pro",
+    title: "Update anytime, anywhere",
     description:
-      'Encrypted sharing that works. No more "can you send me that key again?" messages at 2 AM.',
+      "Change your QR code destination instantly without reprinting. Made a mistake? Fix it in seconds. Campaign ended? Point to something new.",
   },
   {
     icon: Plug,
-    title: "One click, everywhere updated",
+    title: "Analytics coming soon",
     description:
-      "Push to GitHub Actions, Vercel, and more with a single button. Your deployment pipeline just got smarter.",
+      "See exactly how many scans each code gets, where they're coming from, and when. Make data-driven decisions about your marketing.",
   },
   {
     icon: Shield,
-    title: "Sleep better at night",
+    title: "IoT & API integration",
     description:
-      "Zero-knowledge encryption means even we can't see your secrets. No more unexpected bills.",
+      "Create API keys per link. Let your Arduino or Raspberry Pi update QR destinations based on sensor data. Perfect for smart environments.",
   },
 ];
 
@@ -72,21 +72,21 @@ export function ComplianceSection() {
             Stop{" "}
             <span className="relative inline-block">
               <span className=" decoration-red-600 decoration-2 underline-offset-4">
-                firefighting
+                wasting money
               </span>
               <div className="absolute -inset-1 bg-gradient-to-r from-red-500/10 to-red-600/10 blur-sm -z-10" />
             </span>{" "}
-            secrets disasters
+            on static QR codes
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            You deserve better than Slack DMs and .env labor work
+            Dynamic QR codes save time, money, and headaches
           </p>
         </motion.div>
 
         <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-1 lg:gap-4">
           <GridItem
             area="md:[grid-area:1/1/2/7]"
-            title="Managing secrets manually"
+            title="Using static QR codes"
             description={
               <div className="space-y-4 mt-4">
                 {painPoints.map((item, index) => {
@@ -113,7 +113,7 @@ export function ComplianceSection() {
 
           <GridItem
             area="md:[grid-area:1/7/2/13]"
-            title="Using Cryptly"
+            title="Using Prism QR"
             description={
               <div className="space-y-4 mt-4">
                 {solutions.map((item, index) => {

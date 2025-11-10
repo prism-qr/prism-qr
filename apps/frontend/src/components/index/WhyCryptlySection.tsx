@@ -14,37 +14,37 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: Lock,
-    title: "End-to-end encryption",
+    title: "Dynamic destination links",
     description:
-      "All encryption happens in your browser. We never see your actual secrets - it's mathematically impossible for us to decrypt them.",
+      "Update your QR code destination anytime without reprinting. Perfect for campaigns, menus, events, or any content that changes over time.",
     area: "md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]",
   },
   {
     icon: KeyRound,
-    title: "Local key generation",
+    title: "IoT & API integration",
     description:
-      "Your cryptographic keys are generated locally in your browser. Your private key never leaves your device in plaintext.",
+      "Create API keys per link. Control QR destinations from Arduino, Raspberry Pi, or any IoT device. Build smart, sensor-driven experiences.",
     area: "md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]",
   },
   {
     icon: Shield,
-    title: "Passphrase protected",
+    title: "Analytics coming soon",
     description:
-      "Your private key is encrypted with your passphrase using AES-256-GCM. Even if someone accesses your encrypted key, it's useless without your passphrase.",
+      "Track scans, locations, and device types. Understand your audience and optimize your QR code strategy with real data.",
     area: "md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]",
   },
   {
     icon: Users,
-    title: "Secure team collaboration",
+    title: "Custom short links",
     description:
-      "Share secrets with your team without compromising security. Each member has their own keys and encryption.",
+      "Get clean, memorable short URLs for your QR codes. Easy to share and professional-looking for your brand.",
     area: "md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]",
   },
   {
     icon: Zap,
-    title: "Lightning fast & reliable",
+    title: "Free & open source",
     description:
-      "All cryptographic operations happen locally for instant response. No waiting for server-side encryption or decryption.",
+      "Always free to use. Open source and transparent. No hidden costs, no vendor lock-in. Use it for hobby projects or business needs.",
     area: "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   },
 ];
@@ -61,10 +61,10 @@ export function WhyCryptlySection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            We take sh*t seriously
+            Why choose Prism QR?
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            True zero-knowledge architecture means your secrets are yours alone
+            Dynamic QR codes with features that grow with your needs
           </p>
         </motion.div>
 

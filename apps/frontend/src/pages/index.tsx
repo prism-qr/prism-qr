@@ -40,17 +40,23 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <motion.h1
-            className="text-center text-4xl font-bold text-neutral-100 md:text-6xl lg:text-7xl pointer-events-none"
-            style={{
-              textShadow: "0 4px 20px rgba(0, 0, 0, 0.8), 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.4), 0 0 90px rgba(139, 92, 246, 0.2)",
-            }}
+          <motion.div
+            className="text-center pointer-events-none"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="">Prism QR</span>
-          </motion.h1>
+            <h1 className="text-4xl font-bold text-neutral-100 md:text-6xl lg:text-7xl"
+              style={{
+                textShadow: "0 4px 20px rgba(0, 0, 0, 0.8), 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.4), 0 0 90px rgba(139, 92, 246, 0.2)",
+              }}
+            >
+              <span className="">Prism QR</span>
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto px-4">
+              Dynamic QR codes that adapt to your needs. Update destinations instantly, no reprinting required.
+            </p>
+          </motion.div>
         </motion.div>
 
         <motion.div
@@ -126,10 +132,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl font-bold text-white md:text-5xl">
-              <span className="">Stop wrestling with QR codes</span>
+              <span className="">Ready to go dynamic?</span>
             </h2>
             <p className="mt-6 text-lg text-neutral-400">
-              Create QR codes instantly. No complexity, no third-party tracking.
+              Create dynamic QR codes in seconds. Update destinations anytime, track performance, and integrate with your IoT devices.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -153,7 +159,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600" />
-                <span>E2E Encrypted</span>
+                <span>IoT Integration</span>
               </div>
             </div>
           </motion.div>
@@ -163,7 +169,7 @@ export default function Home() {
       <footer className="border-t border-neutral-800 py-8 px-6">
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-neutral-500">
-            © 2025 Prism QR. Create QR codes instantly.
+            © 2025 Prism QR. Dynamic QR codes for the modern world.
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
             <a

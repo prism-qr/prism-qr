@@ -19,9 +19,9 @@ const steps: Step[] = [
   {
     icon: Fingerprint,
     number: "1",
-    title: "Authenticate",
+    title: "Create your QR code",
     description:
-      "Log in and your browser generates a unique cryptographic key pair. Your private key is immediately encrypted with your passphrase.",
+      "Sign up and generate a QR code in seconds. Point it to any URL - your website, menu, product page, or social profile.",
     area: "md:[grid-area:1/1/2/5]",
     iconColor: "text-green-600",
     iconBgColor: "bg-green-600/10",
@@ -30,9 +30,9 @@ const steps: Step[] = [
   {
     icon: Terminal,
     number: "2",
-    title: "Create & edit",
+    title: "Update anytime",
     description:
-      "Every secret you add is encrypted in your browser before transmission. Each project has its own encryption key for additional security.",
+      "Change the destination URL whenever you want. No reprinting needed. Made a typo? Fixed. Campaign changed? Updated. It's that simple.",
     area: "md:[grid-area:1/5/2/9]",
     iconColor: "text-blue-600",
     iconBgColor: "bg-blue-600/10",
@@ -41,9 +41,9 @@ const steps: Step[] = [
   {
     icon: Server,
     number: "3",
-    title: "Store securely",
+    title: "Track & optimize",
     description:
-      "We only store encrypted data. Even if our servers were compromised, your secrets remain safe - we literally cannot decrypt them.",
+      "Analytics coming soon! See scan counts, locations, and devices. Connect IoT devices via API to create smart, responsive QR experiences.",
     area: "md:[grid-area:1/9/2/13]",
     iconColor: "text-purple-600",
     iconBgColor: "bg-purple-600/10",
@@ -63,10 +63,10 @@ export function HowItWorksSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            Time is money, save both
+            Simple, powerful, flexible
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            Military-grade encryption meets developer-friendly experience
+            From creation to optimization in three easy steps
           </p>
         </motion.div>
 
