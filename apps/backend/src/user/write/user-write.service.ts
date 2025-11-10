@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserTier } from '../core/enum/user-tier.enum';
 import { UserEventEmitter } from '../events/user-event.emitter';
 import { newDateUTC } from 'src/shared/utils/date.utils';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class UserWriteService {
@@ -22,10 +23,13 @@ export class UserWriteService {
 
   public async create(params: CreateUserParams): Promise<IUser> {
     try {
+      const emailConfirmationToken = this.generateEmailConfirmationToken();
+
       const user = await this.userModel.create({
         email: params.email,
         passwordHash: params.passwordHash,
         emailConfirmed: false,
+        emailConfirmationToken,
         authMethod: params.authMethod,
         lastActivityDate: newDateUTC(),
         tier: UserTier.Free,
@@ -117,5 +121,25 @@ export class UserWriteService {
     });
 
     return user;
+  }
+
+  public async confirmEmail(token: string): Promise<IUser | null> {
+    const user = await this.userModel.findOne({
+      emailConfirmationToken: token,
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    user.emailConfirmed = true;
+    user.emailConfirmationToken = undefined;
+    await user.save();
+
+    return UserEntity.mapToInterface(user);
+  }
+
+  private generateEmailConfirmationToken(): string {
+    return randomBytes(32).toString('hex');
   }
 }

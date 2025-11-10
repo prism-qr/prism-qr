@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -8,6 +9,7 @@ import {
 import { ApiKeyWriteService } from '../write/api-key-write.service';
 import { JwtAuthGuard } from 'src/auth/core/guards/jwt-auth.guard';
 import { ApiKeyReadService } from '../read/api-key-read.service';
+import { IApiKey } from './entities/api-key.interface';
 
 @Controller('')
 export class ApiKeyCoreController {
@@ -33,5 +35,23 @@ export class ApiKeyCoreController {
     const apiKey = await this.apiKeyWriteService.create(linkId);
 
     return { apiKey: apiKey.apiKey };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('links/:linkId/api_keys')
+  public async listApiKeys(
+    @Param('linkId') linkId: string,
+  ): Promise<IApiKey[]> {
+    return this.apiKeyReadService.readApiKeysByLinkId(linkId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('links/:linkId/api_keys/:keyId')
+  public async deleteApiKey(
+    @Param('linkId') linkId: string,
+    @Param('keyId') keyId: string,
+  ): Promise<{ success: boolean }> {
+    await this.apiKeyWriteService.deleteById(keyId, linkId);
+    return { success: true };
   }
 }

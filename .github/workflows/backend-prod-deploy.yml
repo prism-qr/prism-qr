@@ -50,10 +50,12 @@ jobs:
           auth-jwt-secret: ${{ secrets.BACKEND_PROD_AUTH_JWT_SECRET }}
           admin-secret-admin-key: ${{ secrets.BACKEND_PROD_ADMIN_SECRET_ADMIN_KEY }}
           internal-telegram-bot-token: ${{ secrets.BACKEND_PROD_INTERNAL_TELEGRAM_BOT_TOKEN }}
-          google-oauth-client-id: ${{ secrets.BACKEND_PROD_GOOGLE_OAUTH_CLIENT_ID }}
-          google-oauth-client-secret: ${{ secrets.BACKEND_PROD_GOOGLE_OAUTH_CLIENT_SECRET }}
+          google-client-id: ${{ secrets.BACKEND_PROD_GOOGLE_CLIENT_ID }}
+          google-client-secret: ${{ secrets.BACKEND_PROD_GOOGLE_CLIENT_SECRET }}
           better-stack-source-token: ${{ secrets.BACKEND_PROD_BETTER_STACK_SOURCE_TOKEN }}
           better-stack-source-endpoint: ${{ secrets.BACKEND_PROD_BETTER_STACK_SOURCE_ENDPOINT }}
+          mail-user: ${{ secrets.BACKEND_MAIL_USER }}
+          mail-password: ${{ secrets.BACKEND_MAIL_PASSWORD }}
 
       - name: Prune
         uses: "./.github/templates/prune"

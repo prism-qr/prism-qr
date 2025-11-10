@@ -16,6 +16,8 @@ export function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
   const { isAuthenticated, token, login: loginAction } = useAuthStore();
 
@@ -65,8 +67,8 @@ export function RegisterPage() {
 
     try {
       const response = await register({ email, password });
-      loginAction(response.token);
-      router.push("/dashboard");
+      setSuccessMessage(response.message);
+      setRegistrationSuccess(true);
     } catch (err: any) {
       setError(err.message || "Failed to register");
     } finally {
@@ -75,10 +77,24 @@ export function RegisterPage() {
   };
 
   const handleGoogleLogin = () => {
-    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
-    const redirectUri = typeof window !== 'undefined' 
-      ? `${window.location.origin}/auth/callback`
-      : '';
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    
+    if (!googleClientId) {
+      setError("Google authentication is not configured. Please contact support.");
+      return;
+    }
+    
+    const redirectUri = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI || 
+      (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:3000/auth/google/callback'
+        : typeof window !== 'undefined' 
+          ? `${window.location.origin}/auth/google/callback`
+          : 'http://localhost:3000/auth/google/callback');
+    
+    if (!redirectUri) {
+      setError("Unable to determine redirect URI");
+      return;
+    }
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email profile&access_type=offline`;
     
@@ -109,14 +125,55 @@ export function RegisterPage() {
           <p className="text-neutral-400">Sign up to get started</p>
         </div>
 
-        <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl md:p-8">
-          <GlowingEffect
-            spread={40}
-            glow={true}
-            disabled={false}
-            proximity={64}
-            inactiveZone={0.01}
-          />
+        {registrationSuccess ? (
+          <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl md:p-8">
+            <GlowingEffect
+              spread={40}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+            />
+            <div className="relative text-center space-y-4">
+              <div className="mx-auto w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-white">Check your email</h2>
+              <p className="text-neutral-300">{successMessage}</p>
+              <p className="text-sm text-neutral-400">
+                We sent a confirmation link to <span className="text-white font-semibold">{email}</span>
+              </p>
+              <div className="pt-4">
+                <Link
+                  href="/auth/login"
+                  className="text-white hover:text-neutral-300 transition-colors underline"
+                >
+                  Back to login
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl md:p-8">
+            <GlowingEffect
+              spread={40}
+              glow={true}
+              disabled={false}
+              proximity={64}
+              inactiveZone={0.01}
+            />
           <div className="relative space-y-6">
             <button
               onClick={handleGoogleLogin}
@@ -238,6 +295,7 @@ export function RegisterPage() {
             </p>
           </div>
         </div>
+        )}
       </motion.div>
     </div>
   );

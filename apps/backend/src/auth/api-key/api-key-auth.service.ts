@@ -7,7 +7,8 @@ export class ApiKeyAuthService {
   constructor(private readonly apiKeyReadService: ApiKeyReadService) {}
 
   async validateApiKey(apiKey: string, linkId: string): Promise<boolean> {
-    const apiKeys = await this.apiKeyReadService.readApiKeysByLinkId(linkId);
+    const apiKeys =
+      await this.apiKeyReadService.readApiKeysWithHashByLinkId(linkId);
     console.log(apiKeys);
     const matches = await Promise.all(
       apiKeys.map((key) => this.apiKeyMatchesHash(apiKey, key.keyHash)),

@@ -19,6 +19,20 @@ export class ApiKeyReadService {
     return apiKeys.map((apiKey) => ApiKeyEntity.mapToInterface(apiKey));
   }
 
+  public async readApiKeysWithHashByLinkId(
+    linkId: string,
+  ): Promise<Array<IApiKey & { keyHash: string }>> {
+    const apiKeys = await this.apiKeyModel
+      .find({ linkId })
+      .lean<ApiKeyEntity[]>()
+      .exec();
+
+    return apiKeys.map((apiKey) => ({
+      ...ApiKeyEntity.mapToInterface(apiKey),
+      keyHash: apiKey.keyHash,
+    }));
+  }
+
   public async readApiKeyByHash(keyHash: string): Promise<IApiKey | null> {
     const apiKey = await this.apiKeyModel
       .findOne({ keyHash })

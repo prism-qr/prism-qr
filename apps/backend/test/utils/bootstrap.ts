@@ -18,20 +18,34 @@ import { UserEntity } from 'src/user/core/entities/user.entity';
 import { ApiKeyCoreModule } from 'src/api-key/core/api-key-core.module';
 import { GeneralUtils } from './general-utils';
 import { LinkVisitCoreModule } from 'src/link-visit/core/link-visit-core.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { EmailConfirmationService } from 'src/auth/traditonal/email-confirmation.service';
+import { MailerModule, MailerService } from '@nestjs-modules/mailer';
+import { MailerMock } from './mailer-mock';
 
 export async function createTestApp() {
   const module: TestingModule = await Test.createTestingModule({
     imports: [
       rootMongooseTestModule(),
       EventEmitterModule.forRoot(),
+      CacheModule.register({ ttl: 600000, isGlobal: true }),
+      MailerModule.forRoot({
+        transport: {
+          host: 'localhost',
+          port: 1025,
+        },
+      }),
       LinkCoreModule,
       UserCoreModule,
       RelayModule,
       AuthCoreModule,
       ApiKeyCoreModule,
-      LinkVisitCoreModule
+      LinkVisitCoreModule,
     ],
-  }).compile();
+  })
+    .overrideProvider(MailerService)
+    .useClass(MailerMock)
+    .compile();
 
   const app = module.createNestApplication();
   app.useGlobalPipes(
@@ -67,12 +81,15 @@ export async function createTestApp() {
   return {
     app,
     module,
+    mocks: {
+      mailerService: module.get<MailerService>(MailerService),
+    },
     models: {
       linkModel,
     },
     utils: {
       linkUtils: new LinkUtils(app),
-      generalUtils: new GeneralUtils(app)
+      generalUtils: new GeneralUtils(app),
     },
     methods: {
       clearDatabase,

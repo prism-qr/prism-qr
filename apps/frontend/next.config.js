@@ -11,7 +11,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/r/:slug',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/r/:slug`,
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig
-

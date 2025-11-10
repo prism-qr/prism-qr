@@ -16,7 +16,7 @@ export class ApiKeyWriteService {
 
     const apiKey = await this.apiKeyModel.create({
       keyHash: hash,
-      keyPrefix: plain.substring(0, 18), // "sk_live_a1b2c3d4e5"
+      prefix: plain.substring(0, 18),
       linkId,
     });
 
@@ -28,6 +28,10 @@ export class ApiKeyWriteService {
 
   public async deleteByUserId(userId: string): Promise<void> {
     await this.apiKeyModel.deleteMany({ userId });
+  }
+
+  public async deleteById(keyId: string, linkId: string): Promise<void> {
+    await this.apiKeyModel.deleteOne({ _id: keyId, linkId });
   }
 
   private async generateAndHashApiKey(): Promise<{

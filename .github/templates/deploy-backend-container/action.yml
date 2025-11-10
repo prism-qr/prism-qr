@@ -38,9 +38,19 @@ inputs:
   internal-telegram-bot-token:
     required: true
 
-  google-oauth-client-id:
+  google-client-id:
     required: true
-  google-oauth-client-secret:
+  google-client-secret:
+    required: true
+
+  better-stack-source-token:
+    required: false
+  better-stack-source-endpoint:
+    required: false
+
+  mail-user:
+    required: true
+  mail-password:
     required: true
 
 runs:
@@ -66,8 +76,10 @@ runs:
           -e AUTH_JWT_SECRET=${{ inputs.auth-jwt-secret }} \
           -e ADMIN_SECRET_ADMIN_KEY=${{ inputs.admin-secret-admin-key }} \
           -e INTERNAL_TELEGRAM_BOT_TOKEN=${{ inputs.internal-telegram-bot-token }} \
-          -e GOOGLE_OAUTH_CLIENT_ID=${{ inputs.google-oauth-client-id }} \
-          -e GOOGLE_OAUTH_CLIENT_SECRET=${{ inputs.google-oauth-client-secret }} \
+          -e GOOGLE_CLIENT_ID=${{ inputs.google-client-id }} \
+          -e GOOGLE_CLIENT_SECRET=${{ inputs.google-client-secret }} \
           -e BETTER_STACK_SOURCE_TOKEN=${{ inputs.better-stack-source-token }} \
           -e BETTER_STACK_SOURCE_ENDPOINT=${{ inputs.better-stack-source-endpoint }} \
+          -e MAIL_USER=${{ inputs.mail-user }} \
+          -e MAIL_PASSWORD=${{ inputs.mail-password }} \
           ${{ inputs.image-name }}

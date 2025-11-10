@@ -14,6 +14,10 @@ interface EnvConfig {
   mongo: {
     uri: string;
   };
+  mail: {
+    user: string;
+    password: string;
+  };
   auth: {
     jwtSecret: string;
   };
@@ -38,16 +42,20 @@ export const EnvConfigs: EnvConfigs = {
       chatId: '-1002637928179',
     },
     internal: {
-      backendUrl: 'https://prodprismqr.bieda.it',
+      backendUrl: 'https://api.prismqr.com',
       frontendUrl: 'https://prismqr.com',
     },
     google: {
-      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
-      redirectUri: 'https://prismqr.com/app/callbacks/oauth/google',
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      redirectUri: 'https://prismqr.com/auth/google/callback',
     },
     mongo: {
       uri: process.env.MONGO_URI!,
+    },
+    mail: {
+      user: process.env.MAIL_USER!,
+      password: process.env.MAIL_PASSWORD!,
     },
     auth: {
       jwtSecret: process.env.AUTH_JWT_SECRET!,
@@ -58,7 +66,7 @@ export const EnvConfigs: EnvConfigs = {
   },
   [OurEnv.Dev]: {
     internal: {
-      backendUrl: 'https://devprismqr.bieda.it',
+      backendUrl: 'https://dev-api.prismqr.com',
       frontendUrl: 'https://dev.prismqr.com',
     },
     telegram: {
@@ -66,19 +74,21 @@ export const EnvConfigs: EnvConfigs = {
       chatId: '-1002535913992',
     },
     google: {
-      clientId: process.env.GOOGLE_OAUTH_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
-      redirectUri: 'https://dev.prismqr.com/app/callbacks/oauth/google',
-      redirectUriAlternative:
-        'http://localhost:5173/app/callbacks/oauth/google-alternative',
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      redirectUri: 'https://dev.prismqr.com/auth/google/callback',
+      redirectUriAlternative: 'http://localhost:3000/auth/google/callback',
     },
     mongo: {
       uri: process.env.MONGO_URI!,
     },
+    mail: {
+      user: process.env.MAIL_USER!,
+      password: process.env.MAIL_PASSWORD!,
+    },
     auth: {
       jwtSecret: process.env.AUTH_JWT_SECRET!,
     },
-
     admin: {
       secretAdminKey: process.env.ADMIN_SECRET_ADMIN_KEY!,
     },

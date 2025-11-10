@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
+import dynamic from "next/dynamic";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { motion } from "motion/react";
-import { ArrowRight, Check, RefreshCw } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { ComplianceSection } from "@/components/index/ComplianceSection";
 import { HowItWorksSection } from "@/components/index/HowItWorksSection";
 import { WhyCryptlySection } from "@/components/index/WhyCryptlySection";
 import { IntegrationsSection } from "@/components/index/IntegrationsSection";
 import { ReviewsSection } from "@/components/index/ReviewsSection";
-import { QRCodeSVG } from "qrcode.react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
+const GeometricScene = dynamic(
+  () => import("@/components/index/GeometricScene").then((mod) => ({ default: mod.GeometricScene })),
+  { ssr: false }
+);
+
 export default function Home() {
-  const [qrValue, setQrValue] = useState("https://prism-qr.dev");
-  const [inputValue, setInputValue] = useState("https://prism-qr.dev");
   const router = useRouter();
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -22,120 +25,61 @@ export default function Home() {
     router.push("/dashboard");
   };
 
-  const handleGenerate = () => {
-    if (inputValue.trim()) {
-      setQrValue(inputValue.trim());
-    }
-  };
-
-  const handleRefresh = () => {
-    setQrValue((prev) => prev + "?t=" + Date.now());
-  };
-
   return (
-    <div className="min-h-screen bg-black tracking-wide">
-      <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black">
+    <div className="min-h-screen bg-black tracking-wide overflow-visible relative">
+      <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-visible bg-black pb-12" style={{ zIndex: 10, position: 'relative' }}>
+
+        <div className="absolute inset-0 z-0 overflow-visible" style={{ zIndex: 100 }}>
+          <GeometricScene />
+        </div>
 
         <motion.div
-          className="relative z-10 mt-0 md:mt-20 w-full max-w-7xl mx-auto px-6 py-12 sm:px-8 md:px-12 lg:px-16"
-          initial={{ opacity: 0, y: 100, scale: 0.5 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 2, ease: [0, 1, 0, 1] }}
+          className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
+          style={{ zIndex: 200 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
         >
-          <h1 className="text-center text-4xl font-bold text-neutral-100 mb-12 md:text-6xl lg:text-7xl">
-            <span className="">Prism QR</span>
-          </h1>
-
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center mt-12">
-            <motion.div
-              className="flex justify-center lg:justify-end order-1 lg:order-2 w-full lg:w-auto"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1], delay: 0.4 }}
-            >
-              <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl md:p-8 min-w-[320px] max-w-[320px]">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                />
-                <div className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl">
-                  <QRCodeSVG
-                    value={qrValue}
-                    size={280}
-                    level="H"
-                    includeMargin={false}
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="flex flex-col gap-4 order-2 lg:order-1 w-full max-w-[500px]"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1], delay: 0.2 }}
-            >
-              <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
-                <GlowingEffect
-                  spread={40}
-                  glow={true}
-                  disabled={false}
-                  proximity={64}
-                  inactiveZone={0.01}
-                />
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Enter URL or text"
-                  className="relative w-full px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-white placeholder-neutral-500 focus:outline-none focus:ring-0 transition-all text-base"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleGenerate}
-                  className="group relative flex-1 inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white text-black px-6 py-3.5 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-white/25 text-base"
-                >
-                  <span>Generate QR</span>
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </button>
-
-                <button
-                  onClick={handleRefresh}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white px-5 py-3.5 font-semibold transition-all hover:bg-neutral-800/50"
-                >
-                  <RefreshCw className="h-5 w-5 transition-transform group-hover:rotate-180" />
-                </button>
-              </div>
-            </motion.div>
-          </div>
-
           <motion.div
-            className="mt-12 flex items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center pointer-events-none"
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0, 0.55, 0.45, 1], delay: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <button
-              onClick={handleDashboardClick}
-              className="cursor-pointer group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white text-black px-8 py-3 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-white/25"
+            <h1 className="text-4xl font-bold text-neutral-100 md:text-6xl lg:text-7xl"
+              style={{
+                textShadow: "0 4px 20px rgba(0, 0, 0, 0.8), 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.4), 0 0 90px rgba(139, 92, 246, 0.2)",
+              }}
             >
-              <span>Dashboard</span>
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </button>
-
-                  <Link
-                    href="/auth/login"
-                    className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-8 py-3 font-semibold text-white transition-all hover:border-neutral-600 hover:bg-neutral-800/70"
-                  >
-                    <span>Sign in</span>
-                  </Link>
+              <span className="">Prism QR</span>
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto px-4">
+              Dynamic QR codes that adapt to your needs. Update destinations instantly, no reprinting required.
+            </p>
           </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="relative z-10 mt-auto mb-12 flex flex-col sm:flex-row items-center justify-center gap-4"
+          style={{ zIndex: 200 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <button
+            onClick={handleDashboardClick}
+            className="cursor-pointer group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white text-black px-8 py-3 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-white/25"
+          >
+            <span>Dashboard</span>
+            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </button>
+
+          <Link
+            href="/auth/login"
+            className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-8 py-3 font-semibold text-white transition-all hover:border-neutral-600 hover:bg-neutral-800/70"
+          >
+            <span>Sign in</span>
+          </Link>
         </motion.div>
 
         <motion.div
@@ -159,15 +103,25 @@ export default function Home() {
 
       </section>
 
-      <ComplianceSection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <ComplianceSection />
+      </div>
 
-      <IntegrationsSection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <IntegrationsSection />
+      </div>
 
-      <HowItWorksSection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <HowItWorksSection />
+      </div>
 
-      <WhyCryptlySection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <WhyCryptlySection />
+      </div>
 
-      <ReviewsSection />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <ReviewsSection />
+      </div>
 
       <section className="relative py-32 px-6">
         <div className="mx-auto max-w-4xl text-center">
@@ -178,10 +132,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl font-bold text-white md:text-5xl">
-              <span className="">Stop wrestling with QR codes</span>
+              <span className="">Ready to go dynamic?</span>
             </h2>
             <p className="mt-6 text-lg text-neutral-400">
-              Create QR codes instantly. No complexity, no third-party tracking.
+              Create dynamic QR codes in seconds. Update destinations anytime, track performance, and integrate with your IoT devices.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -205,7 +159,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600" />
-                <span>E2E Encrypted</span>
+                <span>IoT Integration</span>
               </div>
             </div>
           </motion.div>
@@ -215,7 +169,7 @@ export default function Home() {
       <footer className="border-t border-neutral-800 py-8 px-6">
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-neutral-500">
-            © 2025 Prism QR. Create QR codes instantly.
+            © 2025 Prism QR. Dynamic QR codes for the modern world.
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
             <a
