@@ -47,6 +47,9 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
         host: 'smtp.m231.mikr.dev',
         port: 587,
         secure: false,
+        tls: {
+          rejectUnauthorized: false,
+        },
         requireTLS: true,
         auth: {
           user: getEnvConfig().mail.user,
