@@ -24,7 +24,7 @@ export const UserPlanConfigs: UserPlanConfigs = {
   // free
   [UserTier.Free]: {
     links: {
-      maxNumberOfLinks: 1,
+      maxNumberOfLinks: 3,
     },
     apiKeys: {
       maxNumberOfApiKeys: 5,
