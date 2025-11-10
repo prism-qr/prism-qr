@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +15,7 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
 export class LinkWriteService {
+  private readonly logger = new Logger(LinkWriteService.name);
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectModel(LinkEntity.name) private linkModel: Model<LinkEntity>,
@@ -48,6 +50,9 @@ export class LinkWriteService {
     if (!updatedLink) {
       throw new NotFoundException('Link not found');
     }
+    this.logger.log(
+      `Link updated: ${updatedLink.name}. New destination ${destination}`,
+    );
 
     await this.cacheManager.del(`link:${updatedLink.name}`);
 
