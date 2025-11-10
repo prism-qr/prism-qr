@@ -44,16 +44,16 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
     EventEmitterModule.forRoot(),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.example.com',
+        host: 'smtp.m231.mikr.dev',
         port: 587,
-        secure: false, // upgrade later with STARTTLS
+        secure: false,
         auth: {
           user: getEnvConfig().mail.user,
           pass: getEnvConfig().mail.password,
         },
       },
       defaults: {
-        from: '"Prism QR" <noreply@prismqr.com>',
+        from: '"Prism QR" <admin@prismqr.com>',
       },
     }),
     LinkCoreModule,

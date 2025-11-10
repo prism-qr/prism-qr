@@ -26,6 +26,9 @@ export class UserEntity {
   emailConfirmed: boolean;
 
   @Prop()
+  emailConfirmationToken?: string;
+
+  @Prop()
   accountClaimStatus: AccountClaimStatus;
 
   @Prop({ type: Date })
@@ -46,9 +49,10 @@ export class UserEntity {
   @Prop({ type: Object, default: {} })
   paymentsMetadata: PaymentsMetadata;
 
-  public static mapToInterface(user: UserEntity): IUser {
+  public static mapToInterface(user: UserEntity | UserDocument): IUser {
+    const plainUser = (user as any).toObject ? (user as any).toObject() : user;
     return {
-      ...user,
+      ...plainUser,
       id: user._id.toString(),
     };
   }

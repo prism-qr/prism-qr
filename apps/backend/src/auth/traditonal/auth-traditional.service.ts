@@ -8,6 +8,8 @@ import { CustomJwtService } from '../custom-jwt/custom-jwt.service';
 import { AuthEventEmitter } from '../events/auth-event.emitter';
 import { TokenResponse } from 'src/shared/responses/token.response';
 import { RegisterTraditionalDto } from './dto/register-traditional.dto';
+import { EmailConfirmationService } from './email-confirmation.service';
+import { RegistrationResponse } from 'src/shared/responses/registration.response';
 
 @Injectable()
 export class AuthTraditionalService {
@@ -16,17 +18,18 @@ export class AuthTraditionalService {
     private readonly userReadService: UserReadService,
     private readonly jwtService: CustomJwtService,
     private readonly emitter: AuthEventEmitter,
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
 
-  public async register(dto: RegisterTraditionalDto): Promise<TokenResponse> {
+  public async register(
+    dto: RegisterTraditionalDto,
+  ): Promise<RegistrationResponse> {
     const passwordHash = await this.createPasswordHash(dto.password);
     const user = await this.userWriteService.create({
       email: dto.email,
       passwordHash,
       authMethod: AuthMethod.Traditional,
     });
-
-    const token = await this.jwtService.sign({ id: user.id });
 
     this.emitter.emitUserRegisteredEvent({
       userId: user.id,
@@ -35,9 +38,14 @@ export class AuthTraditionalService {
       emailAccepted: false,
     });
 
+    await this.emailConfirmationService.sendConfirmationEmail(
+      user.email,
+      user.emailConfirmationToken!,
+    );
+
     return {
-      token,
-      isNewUser: true,
+      message:
+        'Registration successful. Please check your email to confirm your account.',
     };
   }
 
@@ -50,6 +58,12 @@ export class AuthTraditionalService {
       !user.passwordHash
     ) {
       throw new UnauthorizedException();
+    }
+
+    if (!user.emailConfirmed) {
+      throw new UnauthorizedException(
+        'Please confirm your email before logging in.',
+      );
     }
 
     const passwordMatches = await this.passwordMatchesHash(
@@ -66,6 +80,18 @@ export class AuthTraditionalService {
     this.emitter.emitUserLoggedInEvent({ userId: user.id });
 
     return { token, isNewUser: false };
+  }
+
+  public async confirmEmail(token: string): Promise<TokenResponse> {
+    const user = await this.userWriteService.confirmEmail(token);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid or expired confirmation token.');
+    }
+
+    const jwtToken = await this.jwtService.sign({ id: user.id });
+
+    return { token: jwtToken, isNewUser: true };
   }
 
   private async passwordMatchesHash(

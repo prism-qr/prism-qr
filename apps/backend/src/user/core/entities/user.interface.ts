@@ -8,6 +8,8 @@ export interface IUser {
   email: string;
   authMethod?: AuthMethod;
   passwordHash?: string;
+  emailConfirmed: boolean;
+  emailConfirmationToken?: string;
   accountClaimStatus: AccountClaimStatus;
   tier: UserTier;
   stripeCustomerId?: string;
