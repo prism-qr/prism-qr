@@ -55,6 +55,8 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
           user: getEnvConfig().mail.user,
           pass: getEnvConfig().mail.password,
         },
+        logger: true,
+        debug: true,
       },
       defaults: {
         from: '"Prism QR" <admin@prismqr.com>',

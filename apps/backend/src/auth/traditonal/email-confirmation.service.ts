@@ -35,6 +35,7 @@ export class EmailConfirmationService {
         </div>
       `,
       });
+      this.logger.log(`Sent confirmation email to ${email}`);
     } catch (error) {
       this.logger.error('Failed to send confirmation email', error);
     }
