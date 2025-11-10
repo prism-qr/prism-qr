@@ -42,7 +42,6 @@ export function DashboardPage() {
   const [apiKeyLoading, setApiKeyLoading] = useState(false);
   const [newApiKeyGenerated, setNewApiKeyGenerated] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const checkmarkTimer = useRef<NodeJS.Timeout | null>(null);
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
 
@@ -128,27 +127,7 @@ export function DashboardPage() {
     []
   );
 
-  useEffect(() => {
-    if (isInitialLoad || !selectedLinkId) return;
 
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-
-    const timer = setTimeout(() => {
-      if (destinationUrl.trim() && selectedLink) {
-        updateLinkDestination(selectedLinkId, destinationUrl, false);
-      }
-    }, 1000);
-
-    debounceTimer.current = timer;
-
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
-  }, [destinationUrl, isInitialLoad, selectedLinkId, updateLinkDestination]);
 
   const handleRefresh = async () => {
     if (!destinationUrl.trim() || !selectedLinkId) return;
@@ -362,9 +341,15 @@ export function DashboardPage() {
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                           {showCheckmark ? (
-                            <Check className="h-4 w-4" />
+                            <>
+                              <Check className="h-4 w-4" />
+                              <span className="hidden sm:inline">Updated</span>
+                            </>
                           ) : (
-                            <RefreshCw className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                            <>
+                              <RefreshCw className="h-4 w-4 transition-transform group-hover:rotate-180" />
+                              <span className="hidden sm:inline">Update</span>
+                            </>
                           )}
                         </button>
                       </div>
