@@ -31,7 +31,9 @@ export class LinkCoreService {
     }
     const link = await this.linkReadService.readByName(name);
 
-    await this.cacheManager.set(cacheKey, JSON.stringify(link));
+    if (link) {
+      await this.cacheManager.set(cacheKey, JSON.stringify(link));
+    }
 
     return this.linkToUrl(link);
   }
