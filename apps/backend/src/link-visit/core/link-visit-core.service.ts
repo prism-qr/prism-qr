@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import { LinkVisitWriteService } from '../write/link-visit-write.service';
+import { LinkVisitBatchBufferService } from '../write/link-visit-batch-buffer.service';
 import { IpApiResponse } from './types/ip-api-response';
 import { CreateLinkVisitParams } from './types/create-link-visit-params';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -11,7 +11,9 @@ import { LinkVisitedEvent } from 'src/relay/events/link-visited.event';
 export class LinkVisitCoreService {
   private readonly logger = new Logger(LinkVisitCoreService.name);
 
-  constructor() {}
+  constructor(
+    private readonly batchBufferService: LinkVisitBatchBufferService,
+  ) {}
 
   tryGetLanguageHeaderFromRequest(req: Request): string | undefined {
     const languageHeader = req.headers['accept-language'];
@@ -89,8 +91,7 @@ export class LinkVisitCoreService {
       lon: geoLocation?.lon,
     };
 
-    this.logger.log(`${JSON.stringify(params)}`);
-    // TODO uncoment to collect logs
-    // await this.linkVisitWriteService.create(params);
+    this.logger.log(`Buffering visit: ${JSON.stringify(params)}`);
+    this.batchBufferService.addToBuffer(params);
   }
 }

@@ -66,28 +66,29 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black tracking-wide overflow-visible relative">
-      <section className="relative flex h-screen w-full flex-col items-center bg-black overflow-visible" style={{ zIndex: 10, position: 'relative' }}>
+      <section className="relative flex h-screen w-full flex-col items-center justify-center bg-black overflow-visible" style={{ zIndex: 10, position: 'relative' }}>
 
         <motion.div
-          className="w-full flex items-center justify-center pointer-events-none pt-8 pb-4"
+          className="w-full flex items-center justify-center pointer-events-none pt-24 md:pt-32 pb-4"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
           <motion.div
-            className="text-center pointer-events-none"
+            className="text-center pointer-events-none w-full"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-5xl font-bold text-white md:text-7xl lg:text-8xl px-8 py-4"
+            <h1 className="text-6xl font-black md:text-7xl lg:text-8xl px-8 py-4 tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent"
               style={{
-                textShadow: "0 0 40px rgba(0, 0, 0, 0.9), 0 0 80px rgba(0, 0, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 1), 0 8px 40px rgba(0, 0, 0, 0.9)",
-                WebkitTextStroke: "1px rgba(0, 0, 0, 0.3)",
+                textShadow: "0 0 60px rgba(168, 85, 247, 0.4), 0 0 120px rgba(168, 85, 247, 0.2)",
+                letterSpacing: "-0.02em",
+                filter: "drop-shadow(0 0 30px rgba(168, 85, 247, 0.3)) drop-shadow(0 0 60px rgba(236, 72, 153, 0.2))",
               }}
             >
-              <span className="">Prism QR</span>
+              Prism QR
             </h1>
           </motion.div>
         </motion.div>
@@ -97,14 +98,14 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="w-full flex flex-col items-center justify-center gap-6 py-12"
+          className="w-full flex flex-col items-center justify-center gap-6 py-12 px-4"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <motion.p
-            className="text-xl md:text-2xl lg:text-3xl text-white max-w-3xl mx-auto px-6 font-medium text-center"
+            className="text-xl md:text-2xl lg:text-3xl text-white max-w-3xl mx-auto px-6 font-medium text-center w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -115,7 +116,7 @@ export default function Home() {
             One QR Code, infinite destinations.
           </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
             {isAuthenticated ? (
               <button
                 onClick={handleDashboardClick}
