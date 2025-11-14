@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Key, Trash2, AlertTriangle, Copy, Check } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
@@ -25,11 +25,7 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [keyToDelete, setKeyToDelete] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchApiKeys();
-  }, [linkId]);
-
-  const fetchApiKeys = async () => {
+  const fetchApiKeys = useCallback(async () => {
     try {
       const keys = await listApiKeys(linkId);
       setApiKeys(keys);
@@ -37,7 +33,11 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
     } catch (err: any) {
       console.error("Failed to fetch API keys:", err);
     }
-  };
+  }, [linkId]);
+
+  useEffect(() => {
+    fetchApiKeys();
+  }, [fetchApiKeys]);
 
   const handleGenerateApiKey = async () => {
     setLoading(true);

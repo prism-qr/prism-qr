@@ -51,19 +51,7 @@ export function DashboardPage() {
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchUserLinks();
-    fetchUser();
-
-    return () => {
-      if (checkmarkTimer.current) {
-        clearTimeout(checkmarkTimer.current);
-      }
-    };
-  }, []);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const user = await getCurrentUser();
       setCurrentUser(user);
@@ -72,9 +60,9 @@ export function DashboardPage() {
     } finally {
       setUserLoading(false);
     }
-  };
+  }, []);
 
-  const fetchUserLinks = async () => {
+  const fetchUserLinks = useCallback(async () => {
     try {
       const fetchedLinks = await getLinks();
       setLinks(fetchedLinks);
@@ -87,13 +75,25 @@ export function DashboardPage() {
     } finally {
       setIsInitialLoad(false);
     }
-  };
+  }, [selectedLinkId]);
+
+  useEffect(() => {
+    setIsMounted(true);
+    fetchUserLinks();
+    fetchUser();
+
+    return () => {
+      if (checkmarkTimer.current) {
+        clearTimeout(checkmarkTimer.current);
+      }
+    };
+  }, [fetchUserLinks, fetchUser]);
 
   useEffect(() => {
     if (selectedLink) {
       setDestinationUrl(selectedLink.destination);
     }
-  }, [selectedLinkId]);
+  }, [selectedLinkId, selectedLink]);
 
   const getQrCodeUrl = () => {
     const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL 

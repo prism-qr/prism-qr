@@ -14,42 +14,42 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: Lock,
-    title: "Dynamic destination links",
+    title: "Dynamic destinations",
     description:
-      "Update your QR code destination anytime without reprinting. Perfect for campaigns, menus, events, or any content that changes over time.",
+      "Update your QR code's target URL anytime without reprinting. Perfect for seasonal campaigns, rotating menus, event schedules, or any content that evolves.",
     area: "md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]",
   },
   {
     icon: KeyRound,
-    title: "IoT & API integration",
+    title: "IoT & API power",
     description:
-      "Create API keys per link. Control QR destinations from Arduino, Raspberry Pi, or any IoT device. Build smart, sensor-driven experiences.",
+      "Create dedicated API keys for each link. Let your IoT devices - Arduino, ESP32, Raspberry Pi - update destinations based on real-time data. Build truly smart experiences.",
     area: "md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]",
   },
   {
     icon: Shield,
-    title: "Analytics coming soon",
+    title: "Analytics dashboard",
     description:
-      "Track scans, locations, and device types. Understand your audience and optimize your QR code strategy with real data.",
+      "Coming soon: Track every scan with detailed analytics. See geographic distribution, device types, peak times, and conversion patterns to optimize your strategy.",
     area: "md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]",
   },
   {
     icon: Users,
-    title: "Custom short links",
+    title: "Clean short URLs",
     description:
-      "Get clean, memorable short URLs for your QR codes. Easy to share and professional-looking for your brand.",
+      "Get memorable, branded short links for every QR code. Easy to type, professional-looking, and perfect for sharing across all channels.",
     area: "md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]",
   },
   {
     icon: Zap,
-    title: "Free & open source",
+    title: "Forever free & open",
     description:
-      "Always free to use. Open source and transparent. No hidden costs, no vendor lock-in. Use it for hobby projects or business needs.",
+      "100% free to use with no limits. Fully open source and transparent. No vendor lock-in, no surprise fees. Use it for passion projects or scale to enterprise.",
     area: "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   },
 ];
 
-export function WhyCryptlySection() {
+export function WhyPrismQRSection() {
   return (
     <section className="relative md:py-24 py-8 px-6">
       <div className="mx-auto max-w-6xl">
@@ -61,10 +61,10 @@ export function WhyCryptlySection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            Why choose Prism QR?
+            Why Prism QR?
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            Dynamic QR codes with features that grow with your needs
+            Dynamic QR codes that grow with your ambitions
           </p>
         </motion.div>
 

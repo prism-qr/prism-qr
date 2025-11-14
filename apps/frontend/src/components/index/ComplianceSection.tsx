@@ -19,41 +19,41 @@ interface Solution {
 const painPoints: PainPoint[] = [
   {
     icon: Terminal,
-    title: 'Printed 5,000 QR codes. Typo in the URL.',
+    title: 'Printed 10,000 QR codes. Found a typo.',
     description:
-      "Static QR codes are permanent. One mistake means reprinting everything. Thousands of dollars down the drain.",
+      "Static QR codes are permanent. One mistake means reprinting everything. Thousands of dollars and days of work lost instantly.",
   },
   {
     icon: CloudUpload,
-    title: "Which QR code is working? No idea.",
+    title: "No idea which QR codes are actually working",
     description:
-      "You've placed codes everywhere - flyers, business cards, product packaging. But you have zero visibility into which ones are actually being scanned.",
+      "You've distributed codes everywhere - business cards, flyers, packaging, posters. But you can't see which ones drive traffic or need updating.",
   },
   {
     icon: Zap,
-    title: "Campaign ended, QR code didn't",
-    description: "Your promotion is over but those QR codes are still out there, pointing to an outdated landing page. Can't update them now.",
+    title: "Campaign ended, but QR codes live forever",
+    description: "Your summer promo is over, but thousands of QR codes still point to the old landing page. No way to update them without reprinting.",
   },
 ];
 
 const solutions: Solution[] = [
   {
     icon: Lock,
-    title: "Update anytime, anywhere",
+    title: "Update instantly, from anywhere",
     description:
-      "Change your QR code destination instantly without reprinting. Made a mistake? Fix it in seconds. Campaign ended? Point to something new.",
+      "Change your QR code destination in seconds. Fixed a typo? Done. Campaign pivot? Updated. All without touching a single printed code.",
   },
   {
     icon: Plug,
-    title: "Analytics coming soon",
+    title: "Track performance in real-time",
     description:
-      "See exactly how many scans each code gets, where they're coming from, and when. Make data-driven decisions about your marketing.",
+      "Analytics coming soon! See exactly which codes get scanned, where your audience is located, and what devices they use. Make smarter marketing decisions.",
   },
   {
     icon: Shield,
-    title: "IoT & API integration",
+    title: "API & IoT integration built-in",
     description:
-      "Create API keys per link. Let your Arduino or Raspberry Pi update QR destinations based on sensor data. Perfect for smart environments.",
+      "Generate API keys per link. Let your Arduino, Raspberry Pi, or smart sensors dynamically update QR destinations. Perfect for interactive installations.",
   },
 ];
 
