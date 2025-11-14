@@ -1,66 +1,47 @@
 "use client";
 
 import { motion } from "motion/react";
-import { CloudUpload, Lock, Plug, Shield, Terminal, Zap } from "lucide-react";
-import { GridItem } from "./GridItem";
+import { Activity, Lock, Plug, Zap } from "lucide-react";
 
-interface PainPoint {
+interface Advantage {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
+  badge?: string;
 }
 
-interface Solution {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-}
-
-const painPoints: PainPoint[] = [
-  {
-    icon: Terminal,
-    title: 'Printed 10,000 QR codes. Found a typo.',
-    description:
-      "Static QR codes are permanent. One mistake means reprinting everything. Thousands of dollars and days of work lost instantly.",
-  },
-  {
-    icon: CloudUpload,
-    title: "No idea which QR codes are actually working",
-    description:
-      "You've distributed codes everywhere - business cards, flyers, packaging, posters. But you can't see which ones drive traffic or need updating.",
-  },
+const advantages: Advantage[] = [
   {
     icon: Zap,
-    title: "Campaign ended, but QR codes live forever",
-    description: "Your summer promo is over, but thousands of QR codes still point to the old landing page. No way to update them without reprinting.",
-  },
-];
-
-const solutions: Solution[] = [
-  {
-    icon: Lock,
     title: "Update instantly, from anywhere",
     description:
-      "Change your QR code destination in seconds. Fixed a typo? Done. Campaign pivot? Updated. All without touching a single printed code.",
+      "Change your QR code destination in seconds. Fix typos, pivot campaigns, or update content without reprinting a single code.",
+  },
+  {
+    icon: Lock,
+    title: "Security & Control",
+    description:
+      "Maintain full control over your QR codes. Disable compromised links instantly, set expiration dates, and protect your brand with secure, manageable destinations.",
+  },
+  {
+    icon: Activity,
+    title: "Track performance in real-time",
+    description:
+      "See exactly which codes get scanned, where your audience is located, and what devices they use.",
+    badge: "Coming Soon",
   },
   {
     icon: Plug,
-    title: "Track performance in real-time",
+    title: "API & IoT Integration",
     description:
-      "Analytics coming soon! See exactly which codes get scanned, where your audience is located, and what devices they use. Make smarter marketing decisions.",
-  },
-  {
-    icon: Shield,
-    title: "API & IoT integration built-in",
-    description:
-      "Generate API keys per link. Let your Arduino, Raspberry Pi, or smart sensors dynamically update QR destinations. Perfect for interactive installations.",
+      "Generate API keys per link. Connect your Arduino, Raspberry Pi, or smart sensors to dynamically update QR destinations.",
   },
 ];
 
 export function ComplianceSection() {
   return (
-    <section className="relative md:py-24 py-8 px-6 max-w-5xl mx-auto">
-      <div className="mx-auto max-w-6xl">
+    <section className="relative md:py-24 py-8 px-6 max-w-7xl mx-auto">
+      <div className="mx-auto">
         <motion.div
           className="mb-16 text-center"
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -69,75 +50,57 @@ export function ComplianceSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-3xl font-bold text-white md:text-5xl mb-4">
-            Stop{" "}
+            The{" "}
             <span className="relative inline-block">
-              <span className=" decoration-red-600 decoration-2 underline-offset-4">
-                wasting money
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Power
               </span>
-              <div className="absolute -inset-1 bg-gradient-to-r from-red-500/10 to-red-600/10 blur-sm -z-10" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-lg -z-10" />
             </span>{" "}
-            on static QR codes
+            of Dynamic QR Codes
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            Dynamic QR codes save time, money, and headaches
+            Flexibility, control, and insights for modern marketing
           </p>
         </motion.div>
 
-        <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-1 lg:gap-4">
-          <GridItem
-            area="md:[grid-area:1/1/2/7]"
-            title="Using static QR codes"
-            description={
-              <div className="space-y-4 mt-4">
-                {painPoints.map((item, index) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="mt-1 rounded-lg bg-red-600/10 border border-red-600/20 p-2">
-                        <IconComponent className="h-5 w-5 text-red-600" />
-                      </div>
-                      <div>
-                        <h4 className="text-foreground text-lg mb-1">
-                          {item.title}
-                        </h4>
-                        <p className="text-sm font-light text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            }
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {advantages.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <motion.div
+                key={index}
+                className="group relative rounded-2xl border border-neutral-800 bg-gradient-to-br from-neutral-900/50 to-neutral-900/30 p-6 backdrop-blur-sm transition-all duration-300 hover:border-neutral-700 hover:shadow-xl hover:shadow-purple-500/10"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur" />
+                
+                <div className="relative">
+                  <div className="mb-4 inline-flex rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-3 ring-1 ring-inset ring-purple-500/20">
+                    <IconComponent className="h-6 w-6 text-purple-400" />
+                  </div>
 
-          <GridItem
-            area="md:[grid-area:1/7/2/13]"
-            title="Using Prism QR"
-            description={
-              <div className="space-y-4 mt-4">
-                {solutions.map((item, index) => {
-                  const IconComponent = item.icon;
-                  return (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="mt-1 rounded-lg bg-green-600/10 border border-green-600/20 p-2">
-                        <IconComponent className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="text-foreground text-lg mb-1">
-                          {item.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            }
-          />
-        </ul>
+                  {item.badge && (
+                    <span className="absolute top-0 right-0 inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 px-3 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-purple-500/20">
+                      {item.badge}
+                    </span>
+                  )}
+
+                  <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors">
+                    {item.title}
+                  </h3>
+                  
+                  <p className="text-sm leading-relaxed text-neutral-400">
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

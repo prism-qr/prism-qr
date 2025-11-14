@@ -61,7 +61,14 @@ export function WhyPrismQRSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            Why Prism QR?
+            Why{" "}
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Prism QR
+              </span>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-lg -z-10" />
+            </span>
+            ?
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
             Dynamic QR codes that grow with your ambitions
@@ -75,9 +82,11 @@ export function WhyPrismQRSection() {
               <GridItem
                 key={index}
                 area={feature.area}
-                icon={<IconComponent className="h-5 w-5 text-green-600" />}
+                icon={<IconComponent className="h-5 w-5 text-purple-400" />}
                 title={feature.title}
                 description={feature.description}
+                iconBgColor="bg-gradient-to-br from-purple-500/10 to-pink-500/10"
+                iconBorderColor="border-purple-500/20"
               />
             );
           })}
