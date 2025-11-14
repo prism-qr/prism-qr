@@ -42,9 +42,9 @@ const features: Feature[] = [
   },
   {
     icon: Zap,
-    title: "Forever free & open",
+    title: "Free & open",
     description:
-      "100% free to use with no limits. Fully open source and transparent. No vendor lock-in, no surprise fees. Use it for passion projects or scale to enterprise.",
+      "100% free to use. Fully open source and transparent. No vendor lock-in, no surprise fees. Use it for passion projects or scale to enterprise.",
     area: "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   },
 ];
@@ -71,7 +71,7 @@ export function WhyPrismQRSection() {
             ?
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            Dynamic QR codes that grow with your ambitions
+            Fast, free, open-source dynamic QR codes for everyone
           </p>
         </motion.div>
 

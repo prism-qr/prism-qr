@@ -60,7 +60,7 @@ export function ComplianceSection() {
             of Dynamic QR Codes
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            Flexibility, control, and insights for modern marketing
+            Making QR codes smarter, one scan at a time
           </p>
         </motion.div>
 
