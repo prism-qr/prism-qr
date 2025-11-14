@@ -1,40 +1,75 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { GitHubIcon } from "@/components/ui/GitHubIcon";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { motion } from "motion/react";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Zap } from "lucide-react";
 import { ComplianceSection } from "@/components/index/ComplianceSection";
 import { HowItWorksSection } from "@/components/index/HowItWorksSection";
-import { WhyCryptlySection } from "@/components/index/WhyCryptlySection";
-import { IntegrationsSection } from "@/components/index/IntegrationsSection";
-import { ReviewsSection } from "@/components/index/ReviewsSection";
+import { WhyPrismQRSection } from "@/components/index/WhyPrismQRSection";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useAuthStore } from "@/lib/store/auth-store";
 
-const GeometricScene = dynamic(
-  () => import("@/components/index/GeometricScene").then((mod) => ({ default: mod.GeometricScene })),
+const DynamicQRScene = dynamic(
+  () => import("@/components/index/DynamicQRScene").then((mod) => ({ default: mod.DynamicQRScene })),
   { ssr: false }
 );
 
 export default function Home() {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const [scanCount, setScanCount] = useState(120494);
+  const [displayCount, setDisplayCount] = useState(120494);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setScanCount((prev) => prev + 1);
+      setIsAnimating(true);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const duration = 800;
+    const steps = 30;
+    const stepDuration = duration / steps;
+    const increment = (scanCount - displayCount) / steps;
+    
+    let currentStep = 0;
+    const animationInterval = setInterval(() => {
+      currentStep++;
+      if (currentStep <= steps) {
+        setDisplayCount(Math.floor(displayCount + increment * currentStep));
+      } else {
+        setDisplayCount(scanCount);
+        setIsAnimating(false);
+        clearInterval(animationInterval);
+      }
+    }, stepDuration);
+
+    return () => clearInterval(animationInterval);
+  }, [scanCount]);
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    router.push("/dashboard");
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    } else {
+      router.push("/auth/login");
+    }
+  };
+
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString("en-US");
   };
 
   return (
     <div className="min-h-screen bg-black tracking-wide overflow-visible relative">
-      <section className="relative flex h-screen w-full flex-col items-center justify-center overflow-visible bg-black pb-12" style={{ zIndex: 10, position: 'relative' }}>
-
-        <div className="absolute inset-0 z-0 overflow-visible" style={{ zIndex: 100 }}>
-          <GeometricScene />
-        </div>
+      <section className="relative flex h-screen w-full flex-col items-center bg-black overflow-visible" style={{ zIndex: 10, position: 'relative' }}>
 
         <motion.div
-          className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
+          className="w-full flex items-center justify-center pointer-events-none pt-8 pb-4"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -46,61 +81,104 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-4xl font-bold text-neutral-100 md:text-6xl lg:text-7xl"
+            <h1 className="text-5xl font-bold text-white md:text-7xl lg:text-8xl px-8 py-4"
               style={{
-                textShadow: "0 4px 20px rgba(0, 0, 0, 0.8), 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(139, 92, 246, 0.6), 0 0 60px rgba(139, 92, 246, 0.4), 0 0 90px rgba(139, 92, 246, 0.2)",
+                textShadow: "0 0 40px rgba(0, 0, 0, 0.9), 0 0 80px rgba(0, 0, 0, 0.8), 0 4px 20px rgba(0, 0, 0, 1), 0 8px 40px rgba(0, 0, 0, 0.9)",
+                WebkitTextStroke: "1px rgba(0, 0, 0, 0.3)",
               }}
             >
               <span className="">Prism QR</span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto px-4">
-              Dynamic QR codes that adapt to your needs. Update destinations instantly, no reprinting required.
-            </p>
           </motion.div>
         </motion.div>
 
+        <div className="flex-1 w-full flex items-center justify-center overflow-visible" style={{ zIndex: 100, maxHeight: '400px' }}>
+          <DynamicQRScene />
+        </div>
+
         <motion.div
-          className="relative z-10 mt-auto mb-12 flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="w-full flex flex-col items-center justify-center gap-6 py-12"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <button
-            onClick={handleDashboardClick}
-            className="cursor-pointer group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white text-black px-8 py-3 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-white/25"
-          >
-            <span>Dashboard</span>
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </button>
-
-          <Link
-            href="/auth/login"
-            className="group inline-flex items-center justify-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-8 py-3 font-semibold text-white transition-all hover:border-neutral-600 hover:bg-neutral-800/70"
-          >
-            <span>Sign in</span>
-          </Link>
-        </motion.div>
-
-        <motion.div
-          className="absolute bottom-10 text-neutral-600"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 1 }}
-        >
-          <p
-            className="text-sm cursor-pointer hover:text-neutral-400 transition-colors"
-            onClick={() => {
-              const featuresSection = document.querySelector(
-                "section:nth-of-type(2)"
-              );
-              featuresSection?.scrollIntoView({ behavior: "smooth" });
+          <motion.p
+            className="text-xl md:text-2xl lg:text-3xl text-white max-w-3xl mx-auto px-6 font-medium text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            style={{
+              textShadow: "0 0 30px rgba(0, 0, 0, 0.95), 0 4px 15px rgba(0, 0, 0, 1), 0 8px 30px rgba(0, 0, 0, 0.9)",
             }}
           >
-            Scroll to explore
-          </p>
-        </motion.div>
+            One QR Code, infinite destinations.
+          </motion.p>
 
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {isAuthenticated ? (
+              <button
+                onClick={handleDashboardClick}
+                className="cursor-pointer group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-3 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-purple-500/50 hover:from-purple-600 hover:to-pink-600"
+              >
+                <span>Dashboard</span>
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </button>
+            ) : (
+              <button
+                onClick={handleDashboardClick}
+                className="cursor-pointer group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 text-lg font-bold shadow-2xl transition-all hover:scale-105 hover:shadow-purple-500/50 hover:from-purple-600 hover:to-pink-600"
+              >
+                <Zap className="h-5 w-5" />
+                <span>Try for Free</span>
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </button>
+            )}
+          </div>
+
+          <motion.div
+            className="text-center px-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <div className="inline-block relative">
+              <motion.div 
+                className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl rounded-full"
+                animate={isAnimating ? {
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3]
+                } : {}}
+                transition={{ duration: 0.8 }}
+              />
+              <motion.div 
+                className="relative bg-black/60 backdrop-blur-sm rounded-2xl px-8 py-4 border border-purple-500/30"
+                animate={isAnimating ? {
+                  borderColor: ["rgba(168, 85, 247, 0.3)", "rgba(168, 85, 247, 0.8)", "rgba(168, 85, 247, 0.3)"]
+                } : {}}
+                transition={{ duration: 0.8 }}
+              >
+                <p className="text-sm md:text-base text-neutral-300 uppercase tracking-wider mb-1 font-semibold">
+                  Total Scans
+                </p>
+                <motion.p 
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                  animate={isAnimating ? {
+                    scale: [1, 1.05, 1],
+                    textShadow: [
+                      "0 0 0px rgba(168, 85, 247, 0)",
+                      "0 0 20px rgba(168, 85, 247, 0.8)",
+                      "0 0 0px rgba(168, 85, 247, 0)"
+                    ]
+                  } : {}}
+                  transition={{ duration: 0.8 }}
+                >
+                  {formatNumber(displayCount)}
+                </motion.p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
       </section>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
@@ -108,19 +186,11 @@ export default function Home() {
       </div>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <IntegrationsSection />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
         <HowItWorksSection />
       </div>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <WhyCryptlySection />
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <ReviewsSection />
+        <WhyPrismQRSection />
       </div>
 
       <section className="relative py-32 px-6">
@@ -132,10 +202,10 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl font-bold text-white md:text-5xl">
-              <span className="">Ready to go dynamic?</span>
+              <span className="">Ready to transform your QR experience?</span>
             </h2>
             <p className="mt-6 text-lg text-neutral-400">
-              Create dynamic QR codes in seconds. Update destinations anytime, track performance, and integrate with your IoT devices.
+              Join thousands using dynamic QR codes for marketing, IoT, and beyond. Start free today.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -151,7 +221,7 @@ export default function Home() {
             <div className="mt-12 flex items-center justify-center gap-2 sm:gap-8 text-xs sm:text-sm text-neutral-500">
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600 " />
-                <span>Free Forever</span>
+                <span>No Credit Card</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600" />
@@ -159,7 +229,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600" />
-                <span>IoT Integration</span>
+                <span>IoT Ready</span>
               </div>
             </div>
           </motion.div>
@@ -169,24 +239,16 @@ export default function Home() {
       <footer className="border-t border-neutral-800 py-8 px-6">
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-neutral-500">
-            © 2025 Prism QR. Dynamic QR codes for the modern world.
+            © 2025 Prism QR. Making QR codes smarter, one scan at a time.
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
             <a
-              href="https://github.com"
+              href="https://github.com/prism-qr/prism-qr"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-neutral-300 transition-colors"
             >
-              GitHub
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-neutral-300 transition-colors"
-            >
-              Support
+              Source Code
             </a>
           </div>
         </div>

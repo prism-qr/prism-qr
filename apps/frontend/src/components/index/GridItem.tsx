@@ -1,5 +1,3 @@
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-
 interface GridItemProps {
   area: string;
   icon?: React.ReactNode;
@@ -19,15 +17,10 @@ export const GridItem = ({
 }: GridItemProps) => {
   return (
     <li className={`min-h-[14rem] list-none ${area}`}>
-      <div className="relative h-full rounded-2xl border border-neutral-800/80 p-2 md:rounded-3xl md:p-3">
-        <GlowingEffect
-          spread={40}
-          glow={true}
-          disabled={false}
-          proximity={64}
-          inactiveZone={0.01}
-        />
-        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl bg-neutral-900/50 backdrop-blur p-6 md:p-6">
+      <div className="group relative h-full rounded-2xl border border-neutral-800 bg-gradient-to-br from-neutral-900/50 to-neutral-900/30 p-6 backdrop-blur-sm transition-all duration-300 hover:border-neutral-700 hover:shadow-xl hover:shadow-purple-500/10">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur" />
+        
+        <div className="relative flex h-full flex-col justify-between gap-6">
           <div className="relative flex flex-1 flex-col justify-between gap-3">
             {icon && (
               <div
@@ -37,7 +30,7 @@ export const GridItem = ({
               </div>
             )}
             <div className="space-y-3">
-              <h3 className="font-sans text-xl font-semibold text-white md:text-2xl">
+              <h3 className="font-sans text-xl font-semibold text-white md:text-2xl group-hover:text-purple-300 transition-colors">
                 {title}
               </h3>
               <div className="font-sans text-sm text-neutral-400 md:text-base">

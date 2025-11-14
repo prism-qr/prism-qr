@@ -19,35 +19,35 @@ const steps: Step[] = [
   {
     icon: Fingerprint,
     number: "1",
-    title: "Create your QR code",
+    title: "Create QR",
     description:
-      "Sign up and generate a QR code in seconds. Point it to any URL - your website, menu, product page, or social profile.",
+      "Sign up free and generate your first QR code instantly. Point it to any URL - website, menu, social profile, or landing page.",
     area: "md:[grid-area:1/1/2/5]",
-    iconColor: "text-green-600",
-    iconBgColor: "bg-green-600/10",
-    iconBorderColor: "border-green-900/80",
+    iconColor: "text-purple-400",
+    iconBgColor: "bg-gradient-to-br from-purple-500/10 to-pink-500/10",
+    iconBorderColor: "border-purple-500/20",
   },
   {
     icon: Terminal,
     number: "2",
     title: "Update anytime",
     description:
-      "Change the destination URL whenever you want. No reprinting needed. Made a typo? Fixed. Campaign changed? Updated. It's that simple.",
+      "Change the destination URL whenever needed from your dashboard or API. No reprinting, no waiting.",
     area: "md:[grid-area:1/5/2/9]",
-    iconColor: "text-blue-600",
-    iconBgColor: "bg-blue-600/10",
-    iconBorderColor: "border-blue-900/80",
+    iconColor: "text-purple-400",
+    iconBgColor: "bg-gradient-to-br from-purple-500/10 to-pink-500/10",
+    iconBorderColor: "border-purple-500/20",
   },
   {
     icon: Server,
     number: "3",
-    title: "Track & optimize",
+    title: "Scale & automate",
     description:
-      "Analytics coming soon! See scan counts, locations, and devices. Connect IoT devices via API to create smart, responsive QR experiences.",
+      "Connect IoT devices via API keys. Build smart systems where sensors dynamically control QR destinations in real-time.",
     area: "md:[grid-area:1/9/2/13]",
-    iconColor: "text-purple-600",
-    iconBgColor: "bg-purple-600/10",
-    iconBorderColor: "border-purple-900/80",
+    iconColor: "text-purple-400",
+    iconBgColor: "bg-gradient-to-br from-purple-500/10 to-pink-500/10",
+    iconBorderColor: "border-purple-500/20",
   },
 ];
 
@@ -63,10 +63,16 @@ export function HowItWorksSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            Simple, powerful, flexible
+            How it{" "}
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                works
+              </span>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-lg -z-10" />
+            </span>
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
-            From creation to optimization in three easy steps
+            From creation to automation in three simple steps
           </p>
         </motion.div>
 

@@ -78,13 +78,13 @@ const ReviewCard = ({ img, name, username, body }: ReviewCardProps) => {
     <figure
       className={cn(
         "relative h-full w-64 cursor-pointer overflow-hidden rounded-xl border p-4",
-        "border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800/50",
-        "backdrop-blur transition-colors"
+        "border-purple-500/20 bg-neutral-900/50 hover:bg-neutral-800/50 hover:border-purple-400/40",
+        "backdrop-blur transition-all duration-300"
       )}
     >
       <div className="flex flex-row items-center gap-2">
         <Image
-          className="rounded-full border border-neutral-700"
+          className="rounded-full border border-purple-500/30"
           width={32}
           height={32}
           alt=""
@@ -114,7 +114,14 @@ export function ReviewsSection() {
           transition={{ duration: 2, ease: [0, 1, 0, 1] }}
         >
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            But don&apos;t just take our word for it
+            But don&apos;t just take{" "}
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                our word
+              </span>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-lg -z-10" />
+            </span>{" "}
+            for it
           </h2>
           <p className="mt-4 text-lg text-neutral-400">
             See what teams are saying about their experience
