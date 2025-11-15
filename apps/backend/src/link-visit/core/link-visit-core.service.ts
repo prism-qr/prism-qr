@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { LinkVisitBatchBufferService } from '../write/link-visit-batch-buffer.service';
 import { IpApiResponse } from './types/ip-api-response';
@@ -6,12 +6,15 @@ import { CreateLinkVisitParams } from './types/create-link-visit-params';
 import { OnEvent } from '@nestjs/event-emitter';
 import { LinkEvents } from 'src/relay/events/link-events.enum';
 import { LinkVisitedEvent } from 'src/relay/events/link-visited.event';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { TOTAL_SCANS_CACHE_KEY } from './types/total-scan-cache.key';
 
 @Injectable()
 export class LinkVisitCoreService {
   private readonly logger = new Logger(LinkVisitCoreService.name);
 
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly batchBufferService: LinkVisitBatchBufferService,
   ) {}
 
@@ -93,5 +96,13 @@ export class LinkVisitCoreService {
 
     this.logger.log(`Buffering visit: ${JSON.stringify(params)}`);
     this.batchBufferService.addToBuffer(params);
+
+    await this.incrementTotalScansCache();
+  }
+
+  async incrementTotalScansCache() {
+    let cached = await this.cacheManager.get<number>(TOTAL_SCANS_CACHE_KEY);
+    cached = (cached ?? 0) + 1;
+    await this.cacheManager.set(TOTAL_SCANS_CACHE_KEY, cached);
   }
 }

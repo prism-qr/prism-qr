@@ -6,12 +6,14 @@ import { TokenResponse } from 'src/shared/responses/token.response';
 import { RegisterTraditionalDto } from './dto/register-traditional.dto';
 import { RegistrationResponse } from 'src/shared/responses/registration.response';
 import { getEnvConfig } from 'src/shared/config/env-configs';
+import { Throttle } from '@nestjs/throttler';
 
 @Public()
 @Controller('auth/traditional')
 export class AuthTraditionalController {
   constructor(private readonly service: AuthTraditionalService) {}
 
+  @Throttle({ heavy: { limit: 10, ttl: 60000 } })
   @Post('register')
   public async register(
     @Body() dto: RegisterTraditionalDto,

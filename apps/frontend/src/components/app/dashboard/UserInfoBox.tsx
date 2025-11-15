@@ -51,7 +51,7 @@ export function UserInfoBox({ user, loading }: UserInfoBoxProps) {
         <span className="text-xs sm:text-sm text-white font-medium truncate">
           {user.email}
         </span>
-        <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-400">
+        <div className="flex items-center gap-2 text-xs text-neutral-400">
           <span className="flex items-center gap-1">
             <Shield className="h-3 w-3" />
             {getAuthMethodDisplay(user.authMethod)}

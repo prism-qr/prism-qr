@@ -40,7 +40,9 @@ export class LinkWriteService {
   }
 
   public async update(linkId: string, destination: string): Promise<ILink> {
-    const updateQuery = this.constructUpdateQuery({ destination });
+    const updateQuery = this.constructUpdateQuery({
+      destination,
+    });
 
     const updatedLink = await this.linkModel.findOneAndUpdate(
       { _id: new Types.ObjectId(linkId) },
@@ -68,11 +70,11 @@ export class LinkWriteService {
     }
   }
 
-  private constructUpdateQuery(dto: UpdateLinkDto): UpdateQuery<LinkEntity> {
+  private constructUpdateQuery(params: UpdateLinkDto): UpdateQuery<LinkEntity> {
     const updateQuery: UpdateQuery<LinkEntity> = {};
 
-    if (dto.destination) {
-      updateQuery.destination = dto.destination;
+    if (params.destination) {
+      updateQuery.destination = params.destination;
     }
 
     return updateQuery;
