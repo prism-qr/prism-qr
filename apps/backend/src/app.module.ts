@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LinkCoreModule } from './link/core/link-core.module';
 import { UserCoreModule } from './user/core/user-core.module';
@@ -16,6 +17,7 @@ import { Logtail } from '@logtail/node';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
   endpoint: process.env.BETTER_STACK_SOURCE_ENDPOINT!,
@@ -42,6 +44,18 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
     }),
     MongooseModule.forRoot(getEnvConfig().mongo.uri, { dbName: 'default' }),
     CacheModule.register({ ttl: 600000, isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60000, // 1 minute
+        limit: 100,
+      },
+      {
+        name: 'heavy',
+        ttl: 60000, // 1 minute
+        limit: 10, // Strict for heavier operations
+      },
+    ]),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     MailerModule.forRoot({
@@ -71,6 +85,11 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
     HealthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

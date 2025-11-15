@@ -4,6 +4,7 @@ import { GoogleAuthLoginService } from './google-auth-login.service';
 import { GoogleLoginBody } from './dto/google-login.body';
 import { TokenResponse } from '../../shared/responses/token.response';
 import { Public } from '../core/decorators/is-public.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Public()
 @Controller('auth/google')
@@ -11,6 +12,7 @@ import { Public } from '../core/decorators/is-public.decorator';
 export class GoogleAuthController {
   constructor(private readonly loginService: GoogleAuthLoginService) {}
 
+  @Throttle({ heavy: { limit: 10, ttl: 60000 } })
   @Post('login')
   @ApiResponse({ type: TokenResponse })
   public async login(@Body() payload: GoogleLoginBody): Promise<TokenResponse> {
