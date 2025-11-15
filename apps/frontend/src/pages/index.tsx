@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowRight, Check, Zap, Loader2 } from "lucide-react";
 import { ComplianceSection } from "@/components/index/ComplianceSection";
@@ -54,13 +55,14 @@ export default function Home() {
     const duration = 800;
     const steps = 30;
     const stepDuration = duration / steps;
-    const increment = (scanCount - displayCount) / steps;
+    const startCount = displayCount;
+    const increment = (scanCount - startCount) / steps;
     
     let currentStep = 0;
     const animationInterval = setInterval(() => {
       currentStep++;
       if (currentStep <= steps) {
-        setDisplayCount(Math.floor(displayCount + increment * currentStep));
+        setDisplayCount(Math.floor(startCount + increment * currentStep));
       } else {
         setDisplayCount(scanCount);
         setIsAnimating(false);
@@ -271,12 +273,12 @@ export default function Home() {
             © 2025 Prism QR. Making QR codes smarter, one scan at a time.
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
-            <a
+            <Link
               href="/api-docs"
               className="hover:text-neutral-300 transition-colors"
             >
               API Documentation
-            </a>
+            </Link>
             <a
               href="https://github.com/prism-qr/prism-qr"
               target="_blank"
