@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { IApiKey } from './api-key.interface';
 
-@Schema({ collection: 'apiKeys', timestamps: true })
+@Schema({ collection: 'api-keys', timestamps: true })
 export class ApiKeyEntity {
   _id: Types.ObjectId;
 

@@ -8,7 +8,7 @@ import { getEnvConfig } from 'src/shared/config/env-configs';
     JwtModule.register({
       global: true,
       secret: getEnvConfig().auth.jwtSecret,
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: '30d' },
     }),
   ],
   providers: [CustomJwtService],
