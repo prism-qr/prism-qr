@@ -30,6 +30,8 @@ import { ApiKeyManagement } from "./ApiKeyManagement";
 import { UserInfoBox } from "./UserInfoBox";
 import { getCurrentUser, User } from "@/lib/api/user";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { QRCodeCustomizer, QRCodeCustomization } from "./QRCodeCustomizer";
+import { CustomQRCode } from "./CustomQRCode";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -51,6 +53,12 @@ export function DashboardPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
   const [copiedLinkId, setCopiedLinkId] = useState(false);
+  const [qrCustomization, setQrCustomization] = useState<QRCodeCustomization>({
+    fgColor: "#000000",
+    bgColor: "#FFFFFF",
+    dotStyle: "square",
+    errorCorrectionLevel: "H",
+  });
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
@@ -221,14 +229,39 @@ export function DashboardPage() {
     const svgElement = qrCodeRef.current.querySelector("svg");
     if (!svgElement) return;
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
+    const padding = 40;
+    const originalWidth = svgElement.width.baseVal.value;
+    const originalHeight = svgElement.height.baseVal.value;
+    const newWidth = originalWidth + padding * 2;
+    const newHeight = originalHeight + padding * 2;
+
+    clonedSvg.setAttribute("width", newWidth.toString());
+    clonedSvg.setAttribute("height", newHeight.toString());
+    clonedSvg.setAttribute("viewBox", `0 0 ${newWidth} ${newHeight}`);
+
+    const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bgRect.setAttribute("width", newWidth.toString());
+    bgRect.setAttribute("height", newHeight.toString());
+    bgRect.setAttribute("fill", qrCustomization.bgColor);
+    clonedSvg.insertBefore(bgRect, clonedSvg.firstChild);
+
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.setAttribute("transform", `translate(${padding}, ${padding})`);
+    while (clonedSvg.children.length > 1) {
+      group.appendChild(clonedSvg.children[1]);
+    }
+    clonedSvg.appendChild(group);
+
+    const svgData = new XMLSerializer().serializeToString(clonedSvg);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = newWidth * 2;
+      canvas.height = newHeight * 2;
+      ctx?.scale(2, 2);
       ctx?.drawImage(img, 0, 0);
       canvas.toBlob((blob) => {
         if (!blob) return;
@@ -348,12 +381,12 @@ export function DashboardPage() {
         {selectedLink && (
           <div className="flex-1 flex items-center">
             <div className="max-w-6xl mx-auto w-full">
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start justify-center">
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start justify-center">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="w-full md:flex-1 space-y-6 min-w-0"
+                  className="w-full lg:flex-1 space-y-6 min-w-0"
                 >
                   <div className="space-y-4">
                     <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
@@ -490,36 +523,44 @@ export function DashboardPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="flex flex-col justify-center md:justify-start w-full md:w-auto md:flex-shrink-0 gap-4 md:mt-[40px] items-center md:items-start"
+                  className="flex flex-col w-full lg:w-auto lg:flex-shrink-0 gap-4 items-stretch"
                 >
-                  <div className="relative rounded-2xl border border-neutral-800/80 p-4 md:p-6 lg:p-8 w-full md:w-auto md:min-w-[280px] max-w-[320px]">
-                    <GlowingEffect
-                      spread={40}
-                      glow={true}
-                      disabled={false}
-                      proximity={64}
-                      inactiveZone={0.01}
-                    />
-                    <div
-                      ref={qrCodeRef}
-                      className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center"
-                    >
-                      <QRCodeSVG
-                        value={getQrCodeUrl()}
-                        size={280}
-                        level="H"
-                        includeMargin={false}
-                        className="w-full h-full max-w-full max-h-full"
+                  <div className="space-y-4">
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-4 md:p-6 lg:p-8 w-full lg:w-auto lg:min-w-[320px] max-w-[400px] mx-auto lg:mx-0">
+                      <GlowingEffect
+                        spread={40}
+                        glow={true}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
                       />
+                      <div
+                        ref={qrCodeRef}
+                        className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center"
+                      >
+                        <CustomQRCode
+                          value={getQrCodeUrl()}
+                          size={280}
+                          fgColor={qrCustomization.fgColor}
+                          bgColor={qrCustomization.bgColor}
+                          dotStyle={qrCustomization.dotStyle}
+                          errorCorrectionLevel={qrCustomization.errorCorrectionLevel}
+                        />
+                      </div>
                     </div>
+                    <button
+                      onClick={handleDownloadQR}
+                      className="w-full px-6 py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-5 w-5" />
+                      <span>Download QR Code</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={handleDownloadQR}
-                    className="w-full md:w-auto px-6 py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Download className="h-5 w-5" />
-                    <span>Download QR Code</span>
-                  </button>
+
+                  <QRCodeCustomizer
+                    customization={qrCustomization}
+                    onChange={setQrCustomization}
+                  />
                 </motion.div>
               </div>
             </div>
