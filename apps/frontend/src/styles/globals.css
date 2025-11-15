@@ -8,10 +8,13 @@
   --foreground: oklch(0.985 0 0);
 }
 
+html,
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: "Open Sans Variable", sans-serif;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 @layer utilities {

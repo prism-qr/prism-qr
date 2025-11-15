@@ -1,5 +1,3 @@
-import { IpApiResponse } from "../types/ip-api-response";
-
 export interface ILinkVisit {
   id: string;
   linkId: string;

@@ -94,20 +94,24 @@ export function DynamicQRScene() {
     const cellSize = dotSize + gap;
     const qrCodeSize = gridSize * cellSize;
     const padding = 40;
-    const canvasSize = qrCodeSize + padding * 2;
+    const baseCanvasSize = qrCodeSize + padding * 2;
+    
+    const maxWidth = Math.min(window.innerWidth - 64, 500);
+    const canvasSize = Math.min(baseCanvasSize, maxWidth);
+    const scale = canvasSize / baseCanvasSize;
 
     canvas.width = canvasSize * dpr;
     canvas.height = canvasSize * dpr;
     canvas.style.width = `${canvasSize}px`;
     canvas.style.height = `${canvasSize}px`;
 
-    ctx.scale(dpr, dpr);
+    ctx.scale(dpr * scale, dpr * scale);
 
     let scanLineY = 0;
     let scanDirection = 1;
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvasSize, canvasSize);
+      ctx.clearRect(0, 0, baseCanvasSize, baseCanvasSize);
 
       ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
       ctx.fillRect(

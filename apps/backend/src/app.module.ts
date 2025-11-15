@@ -15,6 +15,7 @@ import { LogtailTransport } from '@logtail/winston';
 import { Logtail } from '@logtail/node';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
   endpoint: process.env.BETTER_STACK_SOURCE_ENDPOINT!,
@@ -42,6 +43,7 @@ const logtail = new Logtail(process.env.BETTER_STACK_SOURCE_TOKEN!, {
     MongooseModule.forRoot(getEnvConfig().mongo.uri, { dbName: 'default' }),
     CacheModule.register({ ttl: 600000, isGlobal: true }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.m231.mikr.dev',

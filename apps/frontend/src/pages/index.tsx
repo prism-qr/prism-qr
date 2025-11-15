@@ -6,8 +6,8 @@ import { ComplianceSection } from "@/components/index/ComplianceSection";
 import { HowItWorksSection } from "@/components/index/HowItWorksSection";
 import { WhyPrismQRSection } from "@/components/index/WhyPrismQRSection";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useAuthStore } from "@/lib/store/auth-store";
+import { getTotalScans } from "@/lib/api/stats";
 
 const DynamicQRScene = dynamic(
   () => import("@/components/index/DynamicQRScene").then((mod) => ({ default: mod.DynamicQRScene })),
@@ -17,14 +17,31 @@ const DynamicQRScene = dynamic(
 export default function Home() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const [scanCount, setScanCount] = useState(120494);
-  const [displayCount, setDisplayCount] = useState(120494);
+  const [scanCount, setScanCount] = useState(0);
+  const [displayCount, setDisplayCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setScanCount((prev) => prev + 1);
-      setIsAnimating(true);
+    const fetchTotalScans = async () => {
+      try {
+        const total = await getTotalScans();
+        setScanCount(total);
+        setDisplayCount(total);
+      } catch (error) {
+        console.error('Failed to fetch total scans:', error);
+      }
+    };
+
+    fetchTotalScans();
+
+    const interval = setInterval(async () => {
+      try {
+        const total = await getTotalScans();
+        setScanCount(total);
+        setIsAnimating(true);
+      } catch (error) {
+        console.error('Failed to fetch total scans:', error);
+      }
     }, 2000);
 
     return () => clearInterval(interval);
@@ -65,11 +82,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black tracking-wide overflow-visible relative">
-      <section className="relative flex h-screen w-full flex-col items-center justify-center bg-black overflow-visible" style={{ zIndex: 10, position: 'relative' }}>
+    <div className="min-h-screen bg-black tracking-wide overflow-x-hidden relative max-w-full">
+      <section className="relative flex h-screen w-full flex-col items-center justify-center bg-black overflow-hidden" style={{ zIndex: 10, position: 'relative' }}>
 
         <motion.div
-          className="w-full flex items-center justify-center pointer-events-none pt-24 md:pt-32 pb-4"
+          className="w-full flex items-center justify-center pointer-events-none pt-20 md:pt-24 pb-2 md:pb-3"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -93,12 +110,14 @@ export default function Home() {
           </motion.div>
         </motion.div>
 
-        <div className="flex-1 w-full flex items-center justify-center overflow-visible" style={{ zIndex: 100, maxHeight: '400px' }}>
-          <DynamicQRScene />
+        <div className="w-full flex items-center justify-center py-3" style={{ zIndex: 100 }}>
+          <div style={{ maxWidth: '500px', width: '100%', padding: '0 32px' }}>
+            <DynamicQRScene />
+          </div>
         </div>
 
         <motion.div
-          className="w-full flex flex-col items-center justify-center gap-6 py-12 px-4"
+          className="w-full flex flex-col items-center justify-center gap-6 py-4 md:py-6 pb-12 md:pb-16"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -138,12 +157,12 @@ export default function Home() {
           </div>
 
           <motion.div
-            className="text-center px-6"
+            className="text-center px-6 w-full overflow-visible"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <div className="inline-block relative">
+            <div className="inline-block relative overflow-visible">
               <motion.div 
                 className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl rounded-full"
                 animate={isAnimating ? {
@@ -153,17 +172,17 @@ export default function Home() {
                 transition={{ duration: 0.8 }}
               />
               <motion.div 
-                className="relative bg-black/60 backdrop-blur-sm rounded-2xl px-8 py-4 border border-purple-500/30"
+                className="relative bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2 border border-purple-500/30 overflow-visible"
                 animate={isAnimating ? {
                   borderColor: ["rgba(168, 85, 247, 0.3)", "rgba(168, 85, 247, 0.8)", "rgba(168, 85, 247, 0.3)"]
                 } : {}}
                 transition={{ duration: 0.8 }}
               >
-                <p className="text-sm md:text-base text-neutral-300 uppercase tracking-wider mb-1 font-semibold">
+                <p className="text-[10px] md:text-xs text-neutral-300 uppercase tracking-wider mb-0.5 font-semibold">
                   Total Scans
                 </p>
                 <motion.p 
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+                  className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap"
                   animate={isAnimating ? {
                     scale: [1, 1.05, 1],
                     textShadow: [
