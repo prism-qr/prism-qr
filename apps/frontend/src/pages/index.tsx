@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "motion/react";
-import { ArrowRight, Check, Zap } from "lucide-react";
+import { ArrowRight, Check, Zap, Loader2 } from "lucide-react";
 import { ComplianceSection } from "@/components/index/ComplianceSection";
 import { HowItWorksSection } from "@/components/index/HowItWorksSection";
 import { WhyPrismQRSection } from "@/components/index/WhyPrismQRSection";
@@ -20,6 +20,7 @@ export default function Home() {
   const [scanCount, setScanCount] = useState(0);
   const [displayCount, setDisplayCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchTotalScans = async () => {
@@ -27,8 +28,10 @@ export default function Home() {
         const total = await getTotalScans();
         setScanCount(total);
         setDisplayCount(total);
+        setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch total scans:', error);
+        setIsLoading(false);
       }
     };
 
@@ -181,20 +184,26 @@ export default function Home() {
                 <p className="text-[10px] md:text-xs text-neutral-300 uppercase tracking-wider mb-0.5 font-semibold">
                   Total Scans
                 </p>
-                <motion.p 
-                  className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap"
-                  animate={isAnimating ? {
-                    scale: [1, 1.05, 1],
-                    textShadow: [
-                      "0 0 0px rgba(168, 85, 247, 0)",
-                      "0 0 20px rgba(168, 85, 247, 0.8)",
-                      "0 0 0px rgba(168, 85, 247, 0)"
-                    ]
-                  } : {}}
-                  transition={{ duration: 0.8 }}
-                >
-                  {formatNumber(displayCount)}
-                </motion.p>
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-2">
+                    <Loader2 className="h-4 w-4 md:h-5 md:w-5 text-purple-400 animate-spin" />
+                  </div>
+                ) : (
+                  <motion.p 
+                    className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap"
+                    animate={isAnimating ? {
+                      scale: [1, 1.05, 1],
+                      textShadow: [
+                        "0 0 0px rgba(168, 85, 247, 0)",
+                        "0 0 20px rgba(168, 85, 247, 0.8)",
+                        "0 0 0px rgba(168, 85, 247, 0)"
+                      ]
+                    } : {}}
+                    transition={{ duration: 0.8 }}
+                  >
+                    {formatNumber(displayCount)}
+                  </motion.p>
+                )}
               </motion.div>
             </div>
           </motion.div>
