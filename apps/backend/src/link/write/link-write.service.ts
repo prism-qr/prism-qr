@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { LinkEntity } from '../core/entities/link.entity';
 import { ILink } from '../core/entities/link.interface';
 import { CreateLinkDto } from './dto/create-link.dto';
-import { UpdateLinkDto, UpdateLinkParams } from './dto/update-link.dto';
+import { UpdateLinkDto } from './dto/update-link.dto';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()
@@ -39,13 +39,13 @@ export class LinkWriteService {
     }
   }
 
-  public async update(dto: UpdateLinkDto): Promise<ILink> {
+  public async update(linkId: string, destination: string): Promise<ILink> {
     const updateQuery = this.constructUpdateQuery({
-      destination: dto.destination,
+      destination,
     });
 
     const updatedLink = await this.linkModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(dto.linkId) },
+      { _id: new Types.ObjectId(linkId) },
       updateQuery,
       { new: true },
     );
@@ -53,7 +53,7 @@ export class LinkWriteService {
       throw new NotFoundException('Link not found');
     }
     this.logger.log(
-      `Link updated: ${updatedLink.name}. New destination ${dto.destination}`,
+      `Link updated: ${updatedLink.name}. New destination ${destination}`,
     );
 
     await this.cacheManager.del(`link:${updatedLink.name}`);
@@ -70,9 +70,7 @@ export class LinkWriteService {
     }
   }
 
-  private constructUpdateQuery(
-    params: UpdateLinkParams,
-  ): UpdateQuery<LinkEntity> {
+  private constructUpdateQuery(params: UpdateLinkDto): UpdateQuery<LinkEntity> {
     const updateQuery: UpdateQuery<LinkEntity> = {};
 
     if (params.destination) {
