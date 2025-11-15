@@ -173,7 +173,7 @@ export function DynamicQRScene() {
       scanGradient.addColorStop(1, "rgba(139, 92, 246, 0)");
 
       ctx.fillStyle = scanGradient;
-      ctx.fillRect(padding - 10, scanLineY - 20, qrCodeSize + 20, 40);
+      ctx.fillRect(padding - 30, scanLineY - 20, qrCodeSize + 60, 40);
 
       scanLineY += scanDirection * 2;
       if (scanLineY > padding + qrCodeSize + 10) {
