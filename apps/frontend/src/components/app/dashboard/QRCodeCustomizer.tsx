@@ -77,7 +77,7 @@ export function QRCodeCustomizer({ customization, onChange }: QRCodeCustomizerPr
                       Preview Only
                     </p>
                     <p className="text-yellow-500/80 text-xs">
-                      Customizations are temporary and won't be saved. Download the QR code to keep your design.
+                      Customizations are temporary and won&apos;t be saved. Download the QR code to keep your design.
                     </p>
                   </div>
                 </div>

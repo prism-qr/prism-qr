@@ -71,7 +71,7 @@ export default function Home() {
     }, stepDuration);
 
     return () => clearInterval(animationInterval);
-  }, [scanCount]);
+  }, [scanCount, displayCount]);
 
   const handleDashboardClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
