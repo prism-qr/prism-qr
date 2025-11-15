@@ -236,7 +236,7 @@ export default function Home() {
               <span className="">Ready to transform your QR experience?</span>
             </h2>
             <p className="mt-6 text-lg text-neutral-400">
-              Join thousands using dynamic QR codes for marketing, IoT, and beyond. Start free today.
+              Join thousands using dynamic QR codes for marketing, IoT, and beyond. Get started today.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -244,7 +244,7 @@ export default function Home() {
                 onClick={handleDashboardClick}
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-white text-black px-8 py-3 font-semibold shadow-2xl transition-all hover:scale-105 hover:shadow-white/25"
               >
-                <span>Get started - it&apos;s free</span>
+                <span>Get started - no credit card</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
@@ -260,7 +260,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
                 <Check className="h-4 w-4 text-green-600" />
-                <span>IoT Ready</span>
+                <span>Self-Hostable</span>
               </div>
             </div>
           </motion.div>
@@ -271,6 +271,9 @@ export default function Home() {
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-sm text-neutral-500">
             © 2025 Prism QR. Making QR codes smarter, one scan at a time.
+            <div className="mt-1 text-xs text-neutral-600">
+              Software provided &quot;AS IS&quot; under MIT License. Service terms may change.
+            </div>
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
             <Link

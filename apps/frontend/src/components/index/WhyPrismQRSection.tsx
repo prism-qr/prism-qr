@@ -42,9 +42,9 @@ const features: Feature[] = [
   },
   {
     icon: Zap,
-    title: "Free & open",
+    title: "Open source",
     description:
-      "100% free to use. Fully open source and transparent. No vendor lock-in, no surprise fees. Use it for passion projects or scale to enterprise.",
+      "MIT licensed open-source software. Self-host or use our hosted service.",
     area: "md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]",
   },
 ];
