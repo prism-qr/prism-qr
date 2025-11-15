@@ -46,7 +46,7 @@ export default function Home() {
       } catch (error) {
         console.error('Failed to fetch total scans:', error);
       }
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
