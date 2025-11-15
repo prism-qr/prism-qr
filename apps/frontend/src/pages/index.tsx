@@ -272,6 +272,12 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-6 text-sm text-neutral-500">
             <a
+              href="/api-docs"
+              className="hover:text-neutral-300 transition-colors"
+            >
+              API Documentation
+            </a>
+            <a
               href="https://github.com/prism-qr/prism-qr"
               target="_blank"
               rel="noopener noreferrer"

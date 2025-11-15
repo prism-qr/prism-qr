@@ -41,6 +41,8 @@ export class LinkCoreController {
     return await this.linkReadService.readById(id);
   }
 
+  @SkipJwtAuth()
+  @UseGuards(JwtOrApiKeyAuthGuard)
   @Post()
   async createLink(
     @Body() dto: CreateLinkDto,
@@ -71,6 +73,8 @@ export class LinkCoreController {
     return await this.linkWriteService.update(linkId, dto.destination);
   }
 
+  @SkipJwtAuth()
+  @UseGuards(JwtOrApiKeyAuthGuard)
   @Delete(':linkId')
   async deleteLink(@Param('linkId') linkId: string): Promise<void> {
     return await this.linkWriteService.delete(linkId);

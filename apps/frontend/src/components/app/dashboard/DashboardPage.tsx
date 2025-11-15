@@ -14,6 +14,8 @@ import {
   Download,
   Plus,
   Trash2,
+  BookOpen,
+  Copy,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
@@ -48,6 +50,7 @@ export function DashboardPage() {
   const [userLoading, setUserLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
+  const [copiedLinkId, setCopiedLinkId] = useState(false);
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
@@ -258,6 +261,14 @@ export function DashboardPage() {
                 <UserInfoBox user={currentUser} loading={userLoading} />
               </div>
               <button
+                onClick={() => router.push("/api-docs")}
+                className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2 flex-shrink-0"
+                title="API Documentation"
+              >
+                <BookOpen className="h-5 w-5" />
+                <span className="hidden sm:inline text-sm">API Docs</span>
+              </button>
+              <button
                 onClick={handleLogout}
                 className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center flex-shrink-0"
                 title="Logout"
@@ -422,6 +433,44 @@ export function DashboardPage() {
                         <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
                       </a>
                     </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
+                      Link ID
+                    </label>
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
+                      <GlowingEffect
+                        spread={40}
+                        glow={false}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
+                      />
+                      <div className="relative flex items-center gap-2">
+                        <code className="flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-white text-sm sm:text-base font-mono break-all select-all">
+                          {selectedLink.id}
+                        </code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedLink.id);
+                            setCopiedLinkId(true);
+                            setTimeout(() => setCopiedLinkId(false), 2000);
+                          }}
+                          className="p-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white hover:bg-neutral-800/50 transition-all flex-shrink-0"
+                          title="Copy Link ID"
+                        >
+                          {copiedLinkId ? (
+                            <Check className="h-5 w-5 text-green-400" />
+                          ) : (
+                            <Copy className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-neutral-500">
+                      Use this ID with your API key to manage this link programmatically.
+                    </p>
                   </div>
 
                   <ApiKeyManagement linkId={selectedLink.id} />
