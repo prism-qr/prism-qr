@@ -94,7 +94,9 @@ export class LinkVisitCoreService {
       lon: geoLocation?.lon,
     };
 
-    this.logger.log(`Buffering visit: ${JSON.stringify(params)}`);
+    this.logger.log(
+      `Buffering ${params.linkName} visit ${JSON.stringify(params)}`,
+    );
     this.batchBufferService.addToBuffer(params);
 
     await this.incrementTotalScansCache();
