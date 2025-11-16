@@ -20,8 +20,8 @@ describe('LinkCoreController (writes)', () => {
 
   describe('POST /links', () => {
     it('should create a new link', async () => {
-      const setup = await bootstrap.utils.generalUtils.setupFreeUser()
-  
+      const setup = await bootstrap.utils.generalUtils.setupFreeUser();
+
       const data: CreateLinkDto = {
         name: 'test',
         destination: 'https://example.com',
@@ -44,7 +44,7 @@ describe('LinkCoreController (writes)', () => {
   describe('PATCH /links', () => {
     it('updates link destination', async () => {
       // given
-      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow();
 
       // when
       const updateDto: UpdateLinkDto = {
@@ -63,13 +63,13 @@ describe('LinkCoreController (writes)', () => {
 
   describe('DELETE /links/:linkId', () => {
     it('deletes link', async () => {
-      const setup = await bootstrap.utils.generalUtils.setupFreeFlow()
+      const setup = await bootstrap.utils.generalUtils.setupFreeFlow();
 
       const response = await request(bootstrap.app.getHttpServer())
         .delete(`/links/${setup.link.id}`)
-        .set('Authorization', `Bearer ${setup.token}`)
+        .set('Authorization', `Bearer ${setup.token}`);
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(200);
     });
   });
 });

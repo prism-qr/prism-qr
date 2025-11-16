@@ -17,7 +17,7 @@ export class LinkVisitBatchBufferService
   private buffer: CreateLinkVisitParams[] = [];
   private flushInterval: NodeJS.Timeout | null = null;
   private readonly FLUSH_INTERVAL_MS = 10_000;
-  private readonly MAX_BUFFER_SIZE = 500;
+  private readonly MAX_BUFFER_SIZE = 25_000;
 
   constructor(
     @InjectModel(LinkVisitEntity.name)
@@ -79,7 +79,6 @@ export class LinkVisitBatchBufferService
         `Error flushing ${itemsToFlush.length} link visits:`,
         error,
       );
-      this.buffer.push(...itemsToFlush);
     }
   }
 }

@@ -10,7 +10,9 @@ import { ApiKeyWriteService } from '../write/api-key-write.service';
 import { JwtAuthGuard } from 'src/auth/core/guards/jwt-auth.guard';
 import { ApiKeyReadService } from '../read/api-key-read.service';
 import { IApiKey } from './entities/api-key.interface';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle({ heavy: { limit: 10, ttl: 60000 } })
 @Controller('')
 export class ApiKeyCoreController {
   constructor(

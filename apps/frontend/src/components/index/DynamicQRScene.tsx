@@ -14,6 +14,7 @@ interface QRDot {
 export function DynamicQRScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [qrDots, setQrDots] = useState<QRDot[]>([]);
+  const qrDotsRef = useRef<QRDot[]>([]);
   const animationFrameRef = useRef<number | null>(null);
   const gridSize = 21;
   const dotSize = 8;
@@ -50,6 +51,7 @@ export function DynamicQRScene() {
     };
 
     setQrDots(generateQRPattern());
+    qrDotsRef.current = generateQRPattern();
 
     const morphInterval = setInterval(() => {
       setQrDots((prevDots) => {
@@ -76,6 +78,7 @@ export function DynamicQRScene() {
           }
         }
 
+        qrDotsRef.current = newDots;
         return newDots;
       });
     }, 2000);
@@ -107,8 +110,8 @@ export function DynamicQRScene() {
 
     ctx.scale(dpr * scale, dpr * scale);
 
-    let scanLineY = 0;
-    let scanDirection = 1;
+    let scanLineY = padding;
+    let velocity = 1.5;
 
     const animate = () => {
       ctx.clearRect(0, 0, baseCanvasSize, baseCanvasSize);
@@ -130,7 +133,7 @@ export function DynamicQRScene() {
         qrCodeSize + 20
       );
 
-      qrDots.forEach((dot) => {
+      qrDotsRef.current.forEach((dot) => {
         const x = padding + dot.x * cellSize;
         const y = padding + dot.y * cellSize;
 
@@ -175,11 +178,14 @@ export function DynamicQRScene() {
       ctx.fillStyle = scanGradient;
       ctx.fillRect(padding - 30, scanLineY - 20, qrCodeSize + 60, 40);
 
-      scanLineY += scanDirection * 2;
-      if (scanLineY > padding + qrCodeSize + 10) {
-        scanDirection = -1;
-      } else if (scanLineY < padding - 10) {
-        scanDirection = 1;
+      scanLineY += velocity;
+      
+      if (scanLineY >= padding + qrCodeSize) {
+        scanLineY = padding + qrCodeSize;
+        velocity = -Math.abs(velocity);
+      } else if (scanLineY <= padding) {
+        scanLineY = padding;
+        velocity = Math.abs(velocity);
       }
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -192,7 +198,7 @@ export function DynamicQRScene() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [qrDots]);
+  }, []);
 
   return (
     <div className="flex items-center justify-center w-full h-full">

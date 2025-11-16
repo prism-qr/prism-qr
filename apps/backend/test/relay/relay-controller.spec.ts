@@ -16,7 +16,7 @@ describe('RelayController', () => {
     await bootstrap.methods.afterAll();
   });
 
-  describe('GET /:linkName', () => {
+  describe('GET /r/:linkName', () => {
     it('redirects to the destination URL', async () => {
       // given
       const link = await bootstrap.utils.linkUtils.createLink();

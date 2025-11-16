@@ -14,6 +14,8 @@ import {
   Download,
   Plus,
   Trash2,
+  BookOpen,
+  Copy,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
@@ -28,6 +30,8 @@ import { ApiKeyManagement } from "./ApiKeyManagement";
 import { UserInfoBox } from "./UserInfoBox";
 import { getCurrentUser, User } from "@/lib/api/user";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { QRCodeCustomizer, QRCodeCustomization } from "./QRCodeCustomizer";
+import { CustomQRCode } from "./CustomQRCode";
 
 export function DashboardPage() {
   const loginStore = useAuthStore();
@@ -48,6 +52,14 @@ export function DashboardPage() {
   const [userLoading, setUserLoading] = useState(true);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
+  const [copiedLinkId, setCopiedLinkId] = useState(false);
+  const [copiedQrUrl, setCopiedQrUrl] = useState(false);
+  const [qrCustomization, setQrCustomization] = useState<QRCodeCustomization>({
+    fgColor: "#000000",
+    bgColor: "#FFFFFF",
+    dotStyle: "square",
+    errorCorrectionLevel: "H",
+  });
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
@@ -218,15 +230,26 @@ export function DashboardPage() {
     const svgElement = qrCodeRef.current.querySelector("svg");
     if (!svgElement) return;
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const targetSize = 800;
+    const padding = 40;
+    
     const canvas = document.createElement("canvas");
+    canvas.width = targetSize;
+    canvas.height = targetSize;
     const ctx = canvas.getContext("2d");
+    
+    if (!ctx) return;
+
+    ctx.fillStyle = qrCustomization.bgColor;
+    ctx.fillRect(0, 0, targetSize, targetSize);
+
+    const svgData = new XMLSerializer().serializeToString(svgElement);
     const img = new Image();
 
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
+      const qrSize = targetSize - padding * 2;
+      ctx.drawImage(img, padding, padding, qrSize, qrSize);
+      
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
@@ -240,9 +263,7 @@ export function DashboardPage() {
       });
     };
 
-    img.src =
-      "data:image/svg+xml;base64," +
-      btoa(unescape(encodeURIComponent(svgData)));
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
   };
 
   return (
@@ -257,6 +278,14 @@ export function DashboardPage() {
               <div className="flex-1 sm:flex-initial min-w-0">
                 <UserInfoBox user={currentUser} loading={userLoading} />
               </div>
+              <button
+                onClick={() => router.push("/api-docs")}
+                className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2 flex-shrink-0"
+                title="API Documentation"
+              >
+                <BookOpen className="h-5 w-5" />
+                <span className="hidden sm:inline text-sm">API Docs</span>
+              </button>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 sm:px-4 sm:py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center flex-shrink-0"
@@ -337,12 +366,12 @@ export function DashboardPage() {
         {selectedLink && (
           <div className="flex-1 flex items-center">
             <div className="max-w-6xl mx-auto w-full">
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start justify-center">
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start justify-center">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="w-full md:flex-1 space-y-6 min-w-0"
+                  className="w-full lg:flex-1 space-y-6 min-w-0"
                 >
                   <div className="space-y-4">
                     <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
@@ -410,18 +439,73 @@ export function DashboardPage() {
                         proximity={64}
                         inactiveZone={0.01}
                       />
-                      <a
-                        href={getQrCodeUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-neutral-300 hover:text-white text-sm sm:text-base truncate flex items-center gap-2 min-w-0 transition-colors"
-                      >
-                        <span className="truncate">
-                          {truncateUrl(getQrCodeUrl(), 40)}
-                        </span>
-                        <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
-                      </a>
+                      <div className="relative flex items-center gap-2">
+                        <a
+                          href={getQrCodeUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-neutral-300 hover:text-white text-sm sm:text-base truncate flex items-center gap-2 min-w-0 transition-colors"
+                        >
+                          <span className="truncate">
+                            {truncateUrl(getQrCodeUrl(), 40)}
+                          </span>
+                          <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(getQrCodeUrl());
+                            setCopiedQrUrl(true);
+                            setTimeout(() => setCopiedQrUrl(false), 2000);
+                          }}
+                          className="p-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white hover:bg-neutral-800/50 transition-all flex-shrink-0"
+                          title="Copy QR Code Link"
+                        >
+                          {copiedQrUrl ? (
+                            <Check className="h-5 w-5 text-green-400" />
+                          ) : (
+                            <Copy className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
+                      Link ID
+                    </label>
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-3 md:rounded-3xl md:p-4">
+                      <GlowingEffect
+                        spread={40}
+                        glow={false}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
+                      />
+                      <div className="relative flex items-center gap-2">
+                        <code className="flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-white text-sm sm:text-base font-mono break-all select-all">
+                          {selectedLink.id}
+                        </code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(selectedLink.id);
+                            setCopiedLinkId(true);
+                            setTimeout(() => setCopiedLinkId(false), 2000);
+                          }}
+                          className="p-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white hover:bg-neutral-800/50 transition-all flex-shrink-0"
+                          title="Copy Link ID"
+                        >
+                          {copiedLinkId ? (
+                            <Check className="h-5 w-5 text-green-400" />
+                          ) : (
+                            <Copy className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-neutral-500">
+                      Use this ID with your API key to manage this link programmatically.
+                    </p>
                   </div>
 
                   <ApiKeyManagement linkId={selectedLink.id} />
@@ -441,36 +525,44 @@ export function DashboardPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="flex flex-col justify-center md:justify-start w-full md:w-auto md:flex-shrink-0 gap-4 md:mt-[40px] items-center md:items-start"
+                  className="flex flex-col w-full lg:w-auto lg:flex-shrink-0 gap-4 items-stretch"
                 >
-                  <div className="relative rounded-2xl border border-neutral-800/80 p-4 md:p-6 lg:p-8 w-full md:w-auto md:min-w-[280px] max-w-[320px]">
-                    <GlowingEffect
-                      spread={40}
-                      glow={true}
-                      disabled={false}
-                      proximity={64}
-                      inactiveZone={0.01}
-                    />
-                    <div
-                      ref={qrCodeRef}
-                      className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center"
-                    >
-                      <QRCodeSVG
-                        value={getQrCodeUrl()}
-                        size={280}
-                        level="H"
-                        includeMargin={false}
-                        className="w-full h-full max-w-full max-h-full"
+                  <div className="space-y-4">
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-4 md:p-6 lg:p-8 w-full lg:w-auto lg:min-w-[320px] max-w-[400px] mx-auto lg:mx-0">
+                      <GlowingEffect
+                        spread={40}
+                        glow={true}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
                       />
+                      <div
+                        ref={qrCodeRef}
+                        className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center border-2 border-neutral-600 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+                      >
+                        <CustomQRCode
+                          value={getQrCodeUrl()}
+                          size={280}
+                          fgColor={qrCustomization.fgColor}
+                          bgColor={qrCustomization.bgColor}
+                          dotStyle={qrCustomization.dotStyle}
+                          errorCorrectionLevel={qrCustomization.errorCorrectionLevel}
+                        />
+                      </div>
                     </div>
+                    <button
+                      onClick={handleDownloadQR}
+                      className="w-full px-6 py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-5 w-5" />
+                      <span>Download QR Code</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={handleDownloadQR}
-                    className="w-full md:w-auto px-6 py-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white font-semibold hover:bg-neutral-800/50 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Download className="h-5 w-5" />
-                    <span>Download QR Code</span>
-                  </button>
+
+                  <QRCodeCustomizer
+                    customization={qrCustomization}
+                    onChange={setQrCustomization}
+                  />
                 </motion.div>
               </div>
             </div>

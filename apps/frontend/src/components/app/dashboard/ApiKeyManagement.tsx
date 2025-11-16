@@ -37,6 +37,7 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
 
   useEffect(() => {
     fetchApiKeys();
+    setNewApiKey("");
   }, [fetchApiKeys]);
 
   const handleGenerateApiKey = async () => {
@@ -193,23 +194,10 @@ export function ApiKeyManagement({ linkId }: ApiKeyManagementProps) {
                 />
                 <div className="relative flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="mb-1">
                       <code className="text-white font-mono text-sm">
                         {key.prefix}...
                       </code>
-                      <button
-                        onClick={() =>
-                          handleCopyToClipboard(key.prefix, key.id)
-                        }
-                        className="p-1 hover:bg-neutral-800/50 rounded transition-colors"
-                        title="Copy prefix"
-                      >
-                        {copiedId === key.id ? (
-                          <Check className="h-3 w-3 text-green-400" />
-                        ) : (
-                          <Copy className="h-3 w-3 text-neutral-500" />
-                        )}
-                      </button>
                     </div>
                     <p className="text-neutral-500 text-xs">
                       Created {formatDate(key.createdAt)}

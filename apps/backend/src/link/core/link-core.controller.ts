@@ -19,6 +19,7 @@ import { CurrentUserId } from 'src/auth/core/decorators/current-user-id.decorato
 import { UserReadService } from 'src/user/read/user-read.service';
 import { JwtOrApiKeyAuthGuard } from 'src/auth/core/guards/jwt-or-api-key-auth.guard';
 import { SkipJwtAuth } from 'src/auth/core/decorators/skip-jwt-auth.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('links')
 export class LinkCoreController {
@@ -41,6 +42,9 @@ export class LinkCoreController {
     return await this.linkReadService.readById(id);
   }
 
+  @Throttle({ heavy: { limit: 10, ttl: 60000 } })
+  @SkipJwtAuth()
+  @UseGuards(JwtOrApiKeyAuthGuard)
   @Post()
   async createLink(
     @Body() dto: CreateLinkDto,
@@ -61,6 +65,7 @@ export class LinkCoreController {
     return await this.linkWriteService.create(dto, userId);
   }
 
+  @Throttle({ heavy: { limit: 10, ttl: 60000 } })
   @SkipJwtAuth()
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Patch(':linkId')
@@ -71,6 +76,8 @@ export class LinkCoreController {
     return await this.linkWriteService.update(linkId, dto.destination);
   }
 
+  @SkipJwtAuth()
+  @UseGuards(JwtOrApiKeyAuthGuard)
   @Delete(':linkId')
   async deleteLink(@Param('linkId') linkId: string): Promise<void> {
     return await this.linkWriteService.delete(linkId);

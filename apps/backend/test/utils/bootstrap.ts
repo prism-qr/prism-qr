@@ -19,9 +19,9 @@ import { ApiKeyCoreModule } from 'src/api-key/core/api-key-core.module';
 import { GeneralUtils } from './general-utils';
 import { LinkVisitCoreModule } from 'src/link-visit/core/link-visit-core.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { EmailConfirmationService } from 'src/auth/traditonal/email-confirmation.service';
 import { MailerModule, MailerService } from '@nestjs-modules/mailer';
 import { MailerMock } from './mailer-mock';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 export async function createTestApp() {
   const module: TestingModule = await Test.createTestingModule({
@@ -29,6 +29,18 @@ export async function createTestApp() {
       rootMongooseTestModule(),
       EventEmitterModule.forRoot(),
       CacheModule.register({ ttl: 600000, isGlobal: true }),
+      ThrottlerModule.forRoot([
+        {
+          name: 'default',
+          ttl: 60000,
+          limit: 100,
+        },
+        {
+          name: 'heavy',
+          ttl: 60000,
+          limit: 10,
+        },
+      ]),
       MailerModule.forRoot({
         transport: {
           host: 'localhost',
