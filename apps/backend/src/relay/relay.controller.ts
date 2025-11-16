@@ -1,18 +1,19 @@
 import { Controller, Get, Logger, Param, Redirect, Req } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from 'src/auth/core/decorators/is-public.decorator';
-import { LinkVisitCoreService } from 'src/link-visit/core/link-visit-core.service';
 import { LinkCoreService } from 'src/link/core/link-core.service';
 import { getEnvConfig } from 'src/shared/config/env-configs';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { LinkVisitedEvent } from './events/link-visited.event';
 import { LinkEvents } from './events/link-events.enum';
 
+@Public()
+@SkipThrottle({ default: true, heavy: true })
 @Controller('r')
 export class RelayController {
   private readonly logger = new Logger(RelayController.name);
   constructor(
     private readonly linkCoreService: LinkCoreService,
-    private readonly linkVisitCoreService: LinkVisitCoreService,
     private readonly eventEmitter: EventEmitter,
   ) {}
 
@@ -20,7 +21,6 @@ export class RelayController {
     this.eventEmitter.emit(LinkEvents.LinkVisitedEvent, payload);
   }
 
-  @Public()
   @Get(':name')
   @Redirect()
   async redirect(@Req() req: Request, @Param('name') name: string) {
