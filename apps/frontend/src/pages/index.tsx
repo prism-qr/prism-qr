@@ -251,15 +251,15 @@ export default function Home() {
 
             <div className="mt-12 flex items-center justify-center gap-2 sm:gap-8 text-xs sm:text-sm text-neutral-500">
               <div className="flex items-center gap-1 sm:gap-2 ">
-                <Check className="h-4 w-4 text-green-600 " />
+                <Check className="h-4 w-4 text-purple-400" />
                 <span>No Credit Card</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
-                <Check className="h-4 w-4 text-green-600" />
+                <Check className="h-4 w-4 text-purple-400" />
                 <span>Open Source</span>
               </div>
               <div className="flex items-center gap-1 sm:gap-2 ">
-                <Check className="h-4 w-4 text-green-600" />
+                <Check className="h-4 w-4 text-purple-400" />
                 <span>Self-Hostable</span>
               </div>
             </div>
