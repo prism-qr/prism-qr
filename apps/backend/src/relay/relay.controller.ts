@@ -6,6 +6,7 @@ import { getEnvConfig } from 'src/shared/config/env-configs';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 import { LinkVisitedEvent } from './events/link-visited.event';
 import { LinkEvents } from './events/link-events.enum';
+import { TimeIt } from 'src/shared/decorators/time-it.decorator';
 
 @Public()
 @SkipThrottle({ default: true, heavy: true })
@@ -21,10 +22,11 @@ export class RelayController {
     this.eventEmitter.emit(LinkEvents.LinkVisitedEvent, payload);
   }
 
+  @TimeIt()
   @Get(':name')
   @Redirect()
   async redirect(@Req() req: Request, @Param('name') name: string) {
-    const startTime = Date.now();
+    // const startTime = Date.now();
 
     this.emitLinkVisitedEvent({ name, req });
 
@@ -33,9 +35,9 @@ export class RelayController {
     );
     // await this.linkVisitCoreService.logVisitDetails(name, req);
     const targetUrl = await this.linkCoreService.getTargetUrl(name);
-    this.logger.log(`Redirecting to ${targetUrl}`);
-    const endTime = Date.now();
-    this.logger.log(`Redirect time: ${endTime - startTime}ms`);
+    // this.logger.log(`Redirecting to ${targetUrl}`);
+    // const endTime = Date.now();
+    // this.logger.log(`Redirect time: ${endTime - startTime}ms`);
     return { url: targetUrl };
   }
 }
