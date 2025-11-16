@@ -53,6 +53,7 @@ export function DashboardPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
   const [copiedLinkId, setCopiedLinkId] = useState(false);
+  const [copiedQrUrl, setCopiedQrUrl] = useState(false);
   const [qrCustomization, setQrCustomization] = useState<QRCodeCustomization>({
     fgColor: "#000000",
     bgColor: "#FFFFFF",
@@ -229,40 +230,26 @@ export function DashboardPage() {
     const svgElement = qrCodeRef.current.querySelector("svg");
     if (!svgElement) return;
 
-    const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
+    const targetSize = 800;
     const padding = 40;
-    const originalWidth = svgElement.width.baseVal.value;
-    const originalHeight = svgElement.height.baseVal.value;
-    const newWidth = originalWidth + padding * 2;
-    const newHeight = originalHeight + padding * 2;
-
-    clonedSvg.setAttribute("width", newWidth.toString());
-    clonedSvg.setAttribute("height", newHeight.toString());
-    clonedSvg.setAttribute("viewBox", `0 0 ${newWidth} ${newHeight}`);
-
-    const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    bgRect.setAttribute("width", newWidth.toString());
-    bgRect.setAttribute("height", newHeight.toString());
-    bgRect.setAttribute("fill", qrCustomization.bgColor);
-    clonedSvg.insertBefore(bgRect, clonedSvg.firstChild);
-
-    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    group.setAttribute("transform", `translate(${padding}, ${padding})`);
-    while (clonedSvg.children.length > 1) {
-      group.appendChild(clonedSvg.children[1]);
-    }
-    clonedSvg.appendChild(group);
-
-    const svgData = new XMLSerializer().serializeToString(clonedSvg);
+    
     const canvas = document.createElement("canvas");
+    canvas.width = targetSize;
+    canvas.height = targetSize;
     const ctx = canvas.getContext("2d");
+    
+    if (!ctx) return;
+
+    ctx.fillStyle = qrCustomization.bgColor;
+    ctx.fillRect(0, 0, targetSize, targetSize);
+
+    const svgData = new XMLSerializer().serializeToString(svgElement);
     const img = new Image();
 
     img.onload = () => {
-      canvas.width = newWidth * 2;
-      canvas.height = newHeight * 2;
-      ctx?.scale(2, 2);
-      ctx?.drawImage(img, 0, 0);
+      const qrSize = targetSize - padding * 2;
+      ctx.drawImage(img, padding, padding, qrSize, qrSize);
+      
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
@@ -276,9 +263,7 @@ export function DashboardPage() {
       });
     };
 
-    img.src =
-      "data:image/svg+xml;base64," +
-      btoa(unescape(encodeURIComponent(svgData)));
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
   };
 
   return (
@@ -454,17 +439,34 @@ export function DashboardPage() {
                         proximity={64}
                         inactiveZone={0.01}
                       />
-                      <a
-                        href={getQrCodeUrl()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-neutral-300 hover:text-white text-sm sm:text-base truncate flex items-center gap-2 min-w-0 transition-colors"
-                      >
-                        <span className="truncate">
-                          {truncateUrl(getQrCodeUrl(), 40)}
-                        </span>
-                        <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
-                      </a>
+                      <div className="relative flex items-center gap-2">
+                        <a
+                          href={getQrCodeUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group relative flex-1 px-5 py-3.5 rounded-xl bg-neutral-900/50 backdrop-blur border-0 text-neutral-300 hover:text-white text-sm sm:text-base truncate flex items-center gap-2 min-w-0 transition-colors"
+                        >
+                          <span className="truncate">
+                            {truncateUrl(getQrCodeUrl(), 40)}
+                          </span>
+                          <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </a>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(getQrCodeUrl());
+                            setCopiedQrUrl(true);
+                            setTimeout(() => setCopiedQrUrl(false), 2000);
+                          }}
+                          className="p-3 rounded-xl bg-neutral-900/50 backdrop-blur border border-neutral-700 text-white hover:bg-neutral-800/50 transition-all flex-shrink-0"
+                          title="Copy QR Code Link"
+                        >
+                          {copiedQrUrl ? (
+                            <Check className="h-5 w-5 text-green-400" />
+                          ) : (
+                            <Copy className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -536,7 +538,7 @@ export function DashboardPage() {
                       />
                       <div
                         ref={qrCodeRef}
-                        className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center"
+                        className="relative p-4 bg-neutral-900/50 backdrop-blur rounded-xl aspect-square flex items-center justify-center border-2 border-neutral-600 shadow-[0_0_40px_rgba(255,255,255,0.3)]"
                       >
                         <CustomQRCode
                           value={getQrCodeUrl()}

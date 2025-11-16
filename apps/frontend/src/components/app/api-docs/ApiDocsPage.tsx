@@ -165,6 +165,7 @@ export function ApiDocsPage() {
               <li><code className="text-yellow-400">400</code> - Bad Request (invalid parameters)</li>
               <li><code className="text-red-400">401</code> - Unauthorized (invalid API key)</li>
               <li><code className="text-red-400">404</code> - Not Found</li>
+              <li><code className="text-red-400">429</code> - Too Many Requests (rate limit exceeded)</li>
               <li><code className="text-red-400">500</code> - Internal Server Error</li>
             </ul>
           </div>
