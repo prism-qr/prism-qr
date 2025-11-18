@@ -60,6 +60,12 @@ export class LinkVisitCoreService {
       return;
     }
 
+    const cacheKey = `geo:${ip}`;
+    const cached = await this.cacheManager.get<IpApiResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       const response = await axios.get<IpApiResponse>(
         `http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,lat,lon,timezone`,
@@ -67,6 +73,7 @@ export class LinkVisitCoreService {
       if (response.data.status !== 'success') {
         return;
       }
+      await this.cacheManager.set(cacheKey, response.data);
       return response.data;
     } catch (error) {
       this.logger.error(`Error getting geo location from ip: ${ip}`, error);

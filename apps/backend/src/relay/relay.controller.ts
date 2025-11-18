@@ -9,7 +9,6 @@ import { LinkEvents } from './events/link-events.enum';
 import { TimeIt } from 'src/shared/decorators/time-it.decorator';
 
 @Public()
-@SkipThrottle({ default: true, heavy: true })
 @Controller('r')
 export class RelayController {
   private readonly logger = new Logger(RelayController.name);
