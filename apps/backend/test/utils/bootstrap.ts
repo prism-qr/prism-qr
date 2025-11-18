@@ -33,7 +33,7 @@ export async function createTestApp() {
         {
           name: 'default',
           ttl: 60000,
-          limit: 100,
+          limit: 120,
         },
         {
           name: 'heavy',

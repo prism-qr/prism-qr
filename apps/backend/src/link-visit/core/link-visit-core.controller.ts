@@ -8,7 +8,7 @@ import { LinkVisitReadService } from '../read/link-visit-read.service';
 export class LinkVisitCoreController {
   constructor(private readonly readService: LinkVisitReadService) {}
 
-  @SkipThrottle({ default: true, heavy: true })
+  @SkipThrottle({ heavy: true })
   @Get('total')
   public async getTotalScans(): Promise<{ totalScans: number }> {
     return {
