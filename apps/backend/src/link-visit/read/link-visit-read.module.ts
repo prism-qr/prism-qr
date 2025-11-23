@@ -5,7 +5,6 @@ import {
   LinkVisitSchema,
 } from '../core/entities/link-visit.entity';
 import { LinkVisitReadService } from './link-visit-read.service';
-import { LinkVisitCoreController } from '../core/link-visit-core.controller';
 
 @Module({
   imports: [
@@ -14,7 +13,6 @@ import { LinkVisitCoreController } from '../core/link-visit-core.controller';
     ]),
   ],
   providers: [LinkVisitReadService],
-  controllers: [LinkVisitCoreController],
   exports: [LinkVisitReadService],
 })
 export class LinkVisitReadModule {}

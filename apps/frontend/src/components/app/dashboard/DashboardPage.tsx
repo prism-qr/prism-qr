@@ -16,6 +16,7 @@ import {
   Trash2,
   BookOpen,
   Copy,
+  BarChart2,
 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import {
@@ -26,6 +27,7 @@ import {
   deleteLink,
   generateRandomLinkName,
 } from "@/lib/api/links";
+import { getLinkVisits } from "@/lib/api/visits";
 import { ApiKeyManagement } from "./ApiKeyManagement";
 import { UserInfoBox } from "./UserInfoBox";
 import { getCurrentUser, User } from "@/lib/api/user";
@@ -54,6 +56,8 @@ export function DashboardPage() {
   const [linkToDelete, setLinkToDelete] = useState<string | null>(null);
   const [copiedLinkId, setCopiedLinkId] = useState(false);
   const [copiedQrUrl, setCopiedQrUrl] = useState(false);
+  const [visitCount, setVisitCount] = useState<number | null>(null);
+  const [visitsLoading, setVisitsLoading] = useState(false);
   const [qrCustomization, setQrCustomization] = useState<QRCodeCustomization>({
     fgColor: "#000000",
     bgColor: "#FFFFFF",
@@ -62,6 +66,21 @@ export function DashboardPage() {
   });
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
+
+  const fetchVisits = useCallback(async () => {
+    if (!selectedLinkId) return;
+    
+    setVisitsLoading(true);
+    try {
+      const count = await getLinkVisits(selectedLinkId);
+      setVisitCount(count);
+    } catch (err) {
+      console.error("Failed to fetch visits:", err);
+      setVisitCount(null);
+    } finally {
+      setVisitsLoading(false);
+    }
+  }, [selectedLinkId]);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -104,8 +123,9 @@ export function DashboardPage() {
   useEffect(() => {
     if (selectedLink) {
       setDestinationUrl(selectedLink.destination);
+      fetchVisits();
     }
-  }, [selectedLinkId, selectedLink]);
+  }, [selectedLinkId, selectedLink, fetchVisits]);
 
   const getQrCodeUrl = () => {
     const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL 
@@ -466,6 +486,68 @@ export function DashboardPage() {
                             <Copy className="h-5 w-5" />
                           )}
                         </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
+                      Link Visits
+                    </label>
+                    <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl">
+                      <GlowingEffect
+                        spread={40}
+                        glow={false}
+                        disabled={false}
+                        proximity={64}
+                        inactiveZone={0.01}
+                      />
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                              <BarChart2 className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <div className="text-3xl font-bold text-white font-mono">
+                                {visitsLoading ? (
+                                  <span className="animate-pulse">...</span>
+                                ) : (
+                                  visitCount?.toLocaleString() ?? 0
+                                )}
+                              </div>
+                              <div className="text-sm text-neutral-400">Total Scans</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Blurred Analytics Blueprint */}
+                        <div className="relative rounded-xl overflow-hidden bg-neutral-900/30 border border-neutral-800">
+                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-neutral-900/60 backdrop-blur-[2px]">
+                            <div className="px-4 py-2 rounded-full bg-neutral-800/80 border border-neutral-700 text-neutral-300 text-sm font-medium">
+                              Detailed Analytics Coming Soon
+                            </div>
+                          </div>
+                          <div className="p-4 opacity-30 filter blur-sm select-none pointer-events-none">
+                            <div className="h-[150px] w-full flex items-end justify-between gap-2">
+                              {[...Array(12)].map((_, i) => (
+                                <div
+                                  key={i}
+                                  className="w-full bg-blue-500/50 rounded-t-sm"
+                                  style={{
+                                    height: `${Math.max(20, Math.random() * 100)}%`,
+                                  }}
+                                />
+                              ))}
+                            </div>
+                            <div className="mt-4 flex justify-between text-xs text-neutral-500 font-mono">
+                              <span>00:00</span>
+                              <span>06:00</span>
+                              <span>12:00</span>
+                              <span>18:00</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
