@@ -67,12 +67,10 @@ export function DashboardPage() {
 
   const selectedLink = links.find((link) => link.id === selectedLinkId);
 
-  const fetchVisits = useCallback(async () => {
-    if (!selectedLinkId) return;
-    
+  const fetchVisits = useCallback(async (linkName: string) => {
     setVisitsLoading(true);
     try {
-      const count = await getLinkVisits(selectedLinkId);
+      const count = await getLinkVisits(linkName);
       setVisitCount(count);
     } catch (err) {
       console.error("Failed to fetch visits:", err);
@@ -80,7 +78,7 @@ export function DashboardPage() {
     } finally {
       setVisitsLoading(false);
     }
-  }, [selectedLinkId]);
+  }, []);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -123,9 +121,20 @@ export function DashboardPage() {
   useEffect(() => {
     if (selectedLink) {
       setDestinationUrl(selectedLink.destination);
-      fetchVisits();
     }
-  }, [selectedLinkId, selectedLink, fetchVisits]);
+  }, [selectedLinkId, selectedLink]);
+
+  useEffect(() => {
+    if (!selectedLink) return;
+
+    fetchVisits(selectedLink.name);
+
+    const interval = setInterval(() => {
+      fetchVisits(selectedLink.name);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [selectedLinkId, selectedLink?.name, fetchVisits]);
 
   const getQrCodeUrl = () => {
     const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL 
@@ -491,8 +500,15 @@ export function DashboardPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide">
+                    <label className="block text-sm font-semibold text-neutral-300 uppercase tracking-wide flex items-center gap-2">
                       Link Visits
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">
+                        <div className="relative w-2 h-2">
+                          <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+                          <div className="absolute inset-0 rounded-full bg-green-500" />
+                        </div>
+                        <span className="text-[10px] font-semibold text-green-400 uppercase tracking-wider">Live</span>
+                      </div>
                     </label>
                     <div className="relative rounded-2xl border border-neutral-800/80 p-6 md:rounded-3xl">
                       <GlowingEffect
