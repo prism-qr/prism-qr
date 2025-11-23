@@ -16,8 +16,10 @@ export class LinkVisitCoreController {
     };
   }
 
-  @Get(':linkId')
-  public async getLinksScans(@Param('linkId') linkId: string): Promise<number> {
-    return await this.readService.getLinksScans(linkId);
+  @Get(':linkName')
+  public async getLinksScans(
+    @Param('linkName') linkName: string,
+  ): Promise<number> {
+    return this.readService.getLinksScans(linkName);
   }
 }

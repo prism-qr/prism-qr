@@ -1,6 +1,6 @@
 export interface ILinkVisit {
   id: string;
-  linkId: string;
+  linkName: string;
   referrer?: string;
   ip?: string;
   country?: string;

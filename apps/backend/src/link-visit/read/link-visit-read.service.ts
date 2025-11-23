@@ -25,8 +25,8 @@ export class LinkVisitReadService implements OnModuleInit {
     return cached ?? 0;
   }
 
-  public async getLinksScans(linkId: string): Promise<number> {
-    return await this.linkVisitModel.countDocuments({ linkId });
+  public async getLinksScans(linkName: string): Promise<number> {
+    return await this.linkVisitModel.countDocuments({ linkName });
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)
