@@ -9,6 +9,7 @@ interface QRDot {
   y: number;
   active: boolean;
   transitioning: boolean;
+  opacity: number;
 }
 
 export function DynamicQRScene() {
@@ -16,27 +17,37 @@ export function DynamicQRScene() {
   const [qrDots, setQrDots] = useState<QRDot[]>([]);
   const qrDotsRef = useRef<QRDot[]>([]);
   const animationFrameRef = useRef<number | null>(null);
-  const gridSize = 21;
-  const dotSize = 8;
+
+  // High density for "data stream" look
+  const gridSize = 60;
+  const dotSize = 2.5;
   const gap = 2;
 
   useEffect(() => {
     const generateQRPattern = (): QRDot[] => {
       const dots: QRDot[] = [];
+      const center = Math.floor(gridSize / 2);
+
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
+          // Finder patterns (corners) - larger safe zones
           const isFinderPattern =
-            (x < 7 && y < 7) ||
-            (x >= gridSize - 7 && y < 7) ||
-            (x < 7 && y >= gridSize - 7);
+            (x < 12 && y < 12) ||
+            (x >= gridSize - 12 && y < 12) ||
+            (x < 12 && y >= gridSize - 12);
 
           const isFinderCorner =
             isFinderPattern &&
-            ((x >= 2 && x <= 4 && y >= 2 && y <= 4) ||
-              (x >= gridSize - 5 && x <= gridSize - 3 && y >= 2 && y <= 4) ||
-              (x >= 2 && x <= 4 && y >= gridSize - 5 && y <= gridSize - 3));
+            ((x >= 2 && x <= 9 && y >= 2 && y <= 9) ||
+              (x >= gridSize - 10 && x <= gridSize - 3 && y >= 2 && y <= 9) ||
+              (x >= 2 && x <= 9 && y >= gridSize - 10 && y <= gridSize - 3));
 
-          const randomActive = Math.random() > 0.5;
+          // Circular density falloff
+          const distFromCenter = Math.sqrt(Math.pow(x - center, 2) + Math.pow(y - center, 2));
+          const maxDist = Math.sqrt(Math.pow(center, 2) + Math.pow(center, 2));
+          const density = 0.55 - (distFromCenter / maxDist) * 0.5;
+
+          const randomActive = Math.random() < density;
 
           dots.push({
             id: `${x}-${y}`,
@@ -44,19 +55,23 @@ export function DynamicQRScene() {
             y,
             active: isFinderPattern ? !isFinderCorner : randomActive,
             transitioning: false,
+            opacity: Math.random() * 0.5 + 0.2,
           });
         }
       }
       return dots;
     };
 
-    setQrDots(generateQRPattern());
-    qrDotsRef.current = generateQRPattern();
+    const initialDots = generateQRPattern();
+    setQrDots(initialDots);
+    qrDotsRef.current = initialDots;
 
+    // Fast but subtle morphing
     const morphInterval = setInterval(() => {
       setQrDots((prevDots) => {
         const newDots = [...prevDots];
-        const dotsToChange = Math.floor(gridSize * gridSize * 0.15);
+        // Change very few dots per tick
+        const dotsToChange = Math.floor(gridSize * gridSize * 0.005);
 
         for (let i = 0; i < dotsToChange; i++) {
           const randomIndex = Math.floor(
@@ -65,23 +80,26 @@ export function DynamicQRScene() {
           const dot = newDots[randomIndex];
 
           const isFinderPattern =
-            (dot.x < 7 && dot.y < 7) ||
-            (dot.x >= gridSize - 7 && dot.y < 7) ||
-            (dot.x < 7 && dot.y >= gridSize - 7);
+            (dot.x < 12 && dot.y < 12) ||
+            (dot.x >= gridSize - 12 && dot.y < 12) ||
+            (dot.x < 12 && dot.y >= gridSize - 12);
 
           if (!isFinderPattern) {
-            newDots[randomIndex] = {
-              ...dot,
-              active: !dot.active,
-              transitioning: true,
-            };
+            if (Math.random() > 0.5) {
+              newDots[randomIndex] = {
+                ...dot,
+                active: !dot.active,
+                transitioning: true,
+                opacity: 0,
+              };
+            }
           }
         }
 
         qrDotsRef.current = newDots;
         return newDots;
       });
-    }, 2000);
+    }, 500); // Slower updates (was 100)
 
     return () => clearInterval(morphInterval);
   }, []);
@@ -96,10 +114,11 @@ export function DynamicQRScene() {
     const dpr = window.devicePixelRatio || 1;
     const cellSize = dotSize + gap;
     const qrCodeSize = gridSize * cellSize;
-    const padding = 40;
+    const padding = 80; // Large padding for soft fade
     const baseCanvasSize = qrCodeSize + padding * 2;
-    
-    const maxWidth = Math.min(window.innerWidth - 64, 500);
+
+    // Reduced max width for better layout fit
+    const maxWidth = Math.min(window.innerWidth - 40, 380);
     const canvasSize = Math.min(baseCanvasSize, maxWidth);
     const scale = canvasSize / baseCanvasSize;
 
@@ -111,80 +130,97 @@ export function DynamicQRScene() {
     ctx.scale(dpr * scale, dpr * scale);
 
     let scanLineY = padding;
-    let velocity = 1.5;
+    let velocity = 1; // Slower scan (was 2)
+    let time = 0;
 
     const animate = () => {
+      time += 0.02;
       ctx.clearRect(0, 0, baseCanvasSize, baseCanvasSize);
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
-      ctx.fillRect(
-        padding - 10,
-        padding - 10,
-        qrCodeSize + 20,
-        qrCodeSize + 20
+      // Center glow (Brighter)
+      const bgGradient = ctx.createRadialGradient(
+        baseCanvasSize / 2, baseCanvasSize / 2, 0,
+        baseCanvasSize / 2, baseCanvasSize / 2, baseCanvasSize / 2
       );
+      bgGradient.addColorStop(0, "rgba(139, 92, 246, 0.2)"); // Increased from 0.1
+      bgGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, baseCanvasSize, baseCanvasSize);
 
-      ctx.strokeStyle = "rgba(139, 92, 246, 0.3)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        padding - 10,
-        padding - 10,
-        qrCodeSize + 20,
-        qrCodeSize + 20
-      );
-
+      // Draw dots
       qrDotsRef.current.forEach((dot) => {
         const x = padding + dot.x * cellSize;
         const y = padding + dot.y * cellSize;
 
-        if (dot.active) {
-          const gradient = ctx.createRadialGradient(
-            x + dotSize / 2,
-            y + dotSize / 2,
-            0,
-            x + dotSize / 2,
-            y + dotSize / 2,
-            dotSize / 2
-          );
+        // Fade in effect for transitioning dots
+        if (dot.transitioning && dot.opacity < 1) {
+          dot.opacity += 0.1;
+        }
 
-          const isScanningArea = Math.abs(y - scanLineY) < 30;
+        if (dot.active) {
+          const distToScanLine = Math.abs(y - scanLineY);
+          const isScanningArea = distToScanLine < 60;
+
+          // Brighter base opacity
+          let alpha = dot.opacity * 0.6; // Increased from 0.4
+          let color = "139, 92, 246"; // Violet base
 
           if (isScanningArea) {
-            gradient.addColorStop(0, "rgba(139, 92, 246, 1)");
-            gradient.addColorStop(1, "rgba(139, 92, 246, 0.6)");
-          } else {
-            gradient.addColorStop(0, "rgba(255, 255, 255, 0.95)");
-            gradient.addColorStop(1, "rgba(255, 255, 255, 0.7)");
+            const intensity = 1 - (distToScanLine / 60);
+            alpha = 0.6 + (intensity * 0.4); // Brighter scan area
+            // Shift to Cyan/White near scan line
+            if (intensity > 0.8) color = "255, 255, 255";
+            else if (intensity > 0.5) color = "6, 182, 212"; // Cyan
           }
 
-          ctx.fillStyle = gradient;
-          ctx.fillRect(x, y, dotSize, dotSize);
+          // Subtle breathing
+          const pulse = Math.sin(time + dot.x * 0.2 + dot.y * 0.2) * 0.1;
+          alpha += pulse;
+
+          // Radial fade mask
+          const centerX = baseCanvasSize / 2;
+          const centerY = baseCanvasSize / 2;
+          const distFromCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+          const maxDist = qrCodeSize / 1.4;
+          const mask = Math.max(0, 1 - Math.pow(distFromCenter / maxDist, 3));
+
+          alpha *= mask;
+
+          if (alpha > 0.01) {
+            ctx.fillStyle = `rgba(${color}, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(x + dotSize / 2, y + dotSize / 2, dotSize / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
         } else {
-          ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-          ctx.fillRect(x, y, dotSize, dotSize);
+          // No inactive dots for cleaner look
         }
       });
 
+      // Scan Line (Reverted to linear style) - Brighter
       const scanGradient = ctx.createLinearGradient(
-        0,
-        scanLineY - 20,
-        0,
-        scanLineY + 20
+        0, scanLineY - 40,
+        0, scanLineY + 10
       );
       scanGradient.addColorStop(0, "rgba(139, 92, 246, 0)");
-      scanGradient.addColorStop(0.5, "rgba(139, 92, 246, 0.4)");
-      scanGradient.addColorStop(1, "rgba(139, 92, 246, 0)");
+      scanGradient.addColorStop(0.8, "rgba(139, 92, 246, 0.4)"); // Increased from 0.2
+      scanGradient.addColorStop(1, "rgba(168, 85, 247, 0.9)"); // Increased from 0.6
 
       ctx.fillStyle = scanGradient;
-      ctx.fillRect(padding - 30, scanLineY - 20, qrCodeSize + 60, 40);
+      ctx.fillRect(padding - 20, scanLineY - 40, qrCodeSize + 40, 50);
+
+      // Thin bright line at the bottom of the scan
+      ctx.fillStyle = "rgba(232, 121, 249, 0.5)"; // Pinkish highlight
+      ctx.fillRect(padding - 20, scanLineY + 8, qrCodeSize + 40, 2);
 
       scanLineY += velocity;
-      
-      if (scanLineY >= padding + qrCodeSize) {
-        scanLineY = padding + qrCodeSize;
+
+      if (scanLineY >= padding + qrCodeSize + 20) {
+        scanLineY = padding + qrCodeSize + 20;
         velocity = -Math.abs(velocity);
-      } else if (scanLineY <= padding) {
-        scanLineY = padding;
+      } else if (scanLineY <= padding - 20) {
+        scanLineY = padding - 20;
         velocity = Math.abs(velocity);
       }
 
@@ -203,19 +239,15 @@ export function DynamicQRScene() {
   return (
     <div className="flex items-center justify-center w-full h-full">
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
         className="relative"
       >
-        <div className="absolute -inset-20 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-cyan-500/20 blur-3xl opacity-60 animate-pulse" />
-
+        <div className="absolute -inset-20 bg-violet-500/5 blur-[100px] rounded-full" />
         <canvas
           ref={canvasRef}
           className="relative z-10"
-          style={{
-            filter: "drop-shadow(0 0 30px rgba(139, 92, 246, 0.3))",
-          }}
         />
       </motion.div>
     </div>

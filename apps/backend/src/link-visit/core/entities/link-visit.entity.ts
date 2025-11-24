@@ -7,10 +7,7 @@ export class LinkVisitEntity {
   _id: Types.ObjectId;
 
   @Prop()
-  masterMenuId: string;
-
-  @Prop()
-  linkId: string;
+  linkName: string;
 
   @Prop()
   referrer?: string;
@@ -48,5 +45,4 @@ export class LinkVisitEntity {
 }
 
 export type LinkVisitDocument = HydratedDocument<LinkVisitEntity>;
-export const LinkVisitSchema =
-  SchemaFactory.createForClass(LinkVisitEntity);
+export const LinkVisitSchema = SchemaFactory.createForClass(LinkVisitEntity);

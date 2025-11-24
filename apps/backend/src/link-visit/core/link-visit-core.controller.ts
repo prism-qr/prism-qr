@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from 'src/auth/core/decorators/is-public.decorator';
 import { LinkVisitReadService } from '../read/link-visit-read.service';
@@ -14,5 +14,12 @@ export class LinkVisitCoreController {
     return {
       totalScans: await this.readService.getTotalScans(),
     };
+  }
+
+  @Get(':linkName')
+  public async getLinksScans(
+    @Param('linkName') linkName: string,
+  ): Promise<number> {
+    return this.readService.getLinksScans(linkName);
   }
 }
