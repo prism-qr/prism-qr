@@ -19,7 +19,7 @@ export default function Home() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [scanCount, setScanCount] = useState(0);
-  const [displayCount, setDisplayCount] = useState(0);
+  const [displayCount, setDisplayCount] = useState(0); // Start at 0 to animate up
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +28,7 @@ export default function Home() {
       try {
         const total = await getTotalScans();
         setScanCount(total);
-        setDisplayCount(total);
+        // Don't set displayCount here, let the effect handle the animation
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch total scans:', error);
@@ -56,8 +56,12 @@ export default function Home() {
     const steps = 30;
     const stepDuration = duration / steps;
     const startCount = displayCount;
-    const increment = (scanCount - startCount) / steps;
-    
+    const diff = scanCount - startCount;
+
+    if (diff === 0) return; // No change, no animation
+
+    const increment = diff / steps;
+
     let currentStep = 0;
     const animationInterval = setInterval(() => {
       currentStep++;
@@ -91,7 +95,7 @@ export default function Home() {
       <section className="relative flex h-screen w-full flex-col items-center justify-center bg-black overflow-hidden" style={{ zIndex: 10, position: 'relative' }}>
 
         <motion.div
-          className="w-full flex items-center justify-center pointer-events-none pt-20 md:pt-24 pb-2 md:pb-3"
+          className="w-full flex items-center justify-center pointer-events-none pt-12 md:pt-16 pb-2"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -103,7 +107,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-6xl font-black md:text-7xl lg:text-8xl px-8 py-4 tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent"
+            <h1 className="text-5xl font-black md:text-6xl lg:text-7xl px-8 py-2 tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent"
               style={{
                 textShadow: "0 0 60px rgba(168, 85, 247, 0.4), 0 0 120px rgba(168, 85, 247, 0.2)",
                 letterSpacing: "-0.02em",
@@ -122,14 +126,14 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="w-full flex flex-col items-center justify-center gap-6 py-4 md:py-6 pb-12 md:pb-16"
+          className="w-full flex flex-col items-center justify-center gap-4 py-4 md:py-6 pb-8 md:pb-12"
           style={{ zIndex: 200 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <motion.p
-            className="text-xl md:text-2xl lg:text-3xl text-white max-w-3xl mx-auto px-6 font-medium text-center w-full"
+            className="text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto px-6 font-medium text-center w-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -162,13 +166,13 @@ export default function Home() {
           </div>
 
           <motion.div
-            className="text-center px-6 w-full overflow-visible"
+            className="text-center px-6 w-full overflow-visible pb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <div className="inline-block relative overflow-visible">
-              <motion.div 
+              <motion.div
                 className="absolute -inset-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 blur-xl rounded-full"
                 animate={isAnimating ? {
                   scale: [1, 1.1, 1],
@@ -176,7 +180,7 @@ export default function Home() {
                 } : {}}
                 transition={{ duration: 0.8 }}
               />
-              <motion.div 
+              <motion.div
                 className="relative bg-black/60 backdrop-blur-sm rounded-lg px-4 py-2 border border-purple-500/30 overflow-visible"
                 animate={isAnimating ? {
                   borderColor: ["rgba(168, 85, 247, 0.3)", "rgba(168, 85, 247, 0.8)", "rgba(168, 85, 247, 0.3)"]
@@ -191,7 +195,7 @@ export default function Home() {
                     <Loader2 className="h-4 w-4 md:h-5 md:w-5 text-purple-400 animate-spin" />
                   </div>
                 ) : (
-                  <motion.p 
+                  <motion.p
                     className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent whitespace-nowrap"
                     animate={isAnimating ? {
                       scale: [1, 1.05, 1],
