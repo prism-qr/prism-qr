@@ -526,11 +526,7 @@ export function DashboardPage() {
                             </div>
                             <div>
                               <div className="text-3xl font-bold text-white font-mono">
-                                {visitsLoading ? (
-                                  <span className="animate-pulse">...</span>
-                                ) : (
-                                  visitCount?.toLocaleString() ?? 0
-                                )}
+                                {visitCount?.toLocaleString() ?? 0}
                               </div>
                               <div className="text-sm text-neutral-400">Total Scans</div>
                             </div>
